@@ -1,0 +1,677 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>BabyLens AI - See Your Future Baby Instantly</title>
+  <meta name="description" content="Upload your photos and use AI to see what your future baby will look like. Realistic AI baby face generator. Instant delivery.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+  <style>
+    /* ===== Reset & Base ===== */
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html { scroll-behavior: smooth; }
+    body {
+      font-family: 'Inter', -apple-system, sans-serif;
+      background: #FFF8F5;
+      color: #2D3436;
+      line-height: 1.6;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    /* ===== Colors ===== */
+    :root {
+      --pink: #FF8C9E;
+      --pink-light: #FFE4E8;
+      --pink-dark: #E8697A;
+      --coral: #FF6B6B;
+      --blue: #7EC8E3;
+      --blue-light: #E8F6FB;
+      --cream: #FFF8F5;
+      --white: #FFFFFF;
+      --text: #2D3436;
+      --text-light: #636E72;
+      --shadow: 0 4px 24px rgba(255, 140, 158, 0.15);
+      --shadow-hover: 0 8px 40px rgba(255, 140, 158, 0.25);
+      --radius: 20px;
+      --radius-sm: 12px;
+    }
+
+    /* ===== Typography ===== */
+    h1, h2, h3, h4 { font-family: 'Nunito', sans-serif; font-weight: 800; line-height: 1.2; }
+    h1 { font-size: clamp(2.2rem, 5vw, 3.2rem); color: var(--text); }
+    h2 { font-size: clamp(1.6rem, 3.5vw, 2.2rem); text-align: center; margin-bottom: 1rem; }
+    h3 { font-size: 1.3rem; }
+    .subtitle { font-size: 1.1rem; color: var(--text-light); max-width: 560px; margin: 0 auto 2rem; text-align: center; }
+
+    /* ===== Container ===== */
+    .container { max-width: 900px; margin: 0 auto; padding: 0 20px; }
+    .container-wide { max-width: 1100px; margin: 0 auto; padding: 0 20px; }
+
+    /* ===== Header ===== */
+    header {
+      padding: 16px 0;
+      background: var(--white);
+      border-bottom: 1px solid #F0E0E0;
+      position: sticky; top: 0; z-index: 100;
+    }
+    header .container-wide {
+      display: flex; align-items: center; justify-content: space-between;
+    }
+    .logo {
+      font-family: 'Nunito', sans-serif;
+      font-size: 1.4rem; font-weight: 800;
+      color: var(--pink);
+      display: flex; align-items: center; gap: 8px;
+    }
+    .logo span { font-size: 1.6rem; }
+    .badge {
+      background: var(--blue-light);
+      color: #4A9BB5;
+      padding: 6px 14px;
+      border-radius: 20px;
+      font-size: 0.85rem;
+      font-weight: 600;
+    }
+
+    /* ===== Hero ===== */
+    .hero {
+      padding: 60px 0 40px;
+      text-align: center;
+      background: linear-gradient(180deg, #FFF8F5 0%, #FFFFFF 100%);
+    }
+    .hero h1 { margin-bottom: 12px; }
+    .hero .emoji-big { font-size: 2.8rem; display: block; margin-bottom: 8px; }
+    .hero .rating {
+      display: inline-flex; align-items: center; gap: 8px;
+      background: var(--white);
+      padding: 8px 18px;
+      border-radius: 30px;
+      box-shadow: var(--shadow);
+      margin-bottom: 24px;
+      font-weight: 600;
+      font-size: 0.95rem;
+    }
+    .hero .rating .stars { color: #FFB800; letter-spacing: 2px; }
+    .hero .rating .num { color: var(--pink); }
+
+    /* ===== Upload Section ===== */
+    .upload-section {
+      padding: 40px 0 60px;
+    }
+    .upload-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 20px;
+      max-width: 640px;
+      margin: 0 auto 28px;
+    }
+    @media (max-width: 520px) {
+      .upload-grid { grid-template-columns: 1fr; }
+    }
+    .upload-box {
+      background: var(--white);
+      border: 2px dashed #E8D0D0;
+      border-radius: var(--radius);
+      padding: 32px 20px;
+      text-align: center;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      position: relative;
+    }
+    .upload-box:hover { border-color: var(--pink); box-shadow: var(--shadow); }
+    .upload-box.has-image { border-style: solid; border-color: var(--pink); }
+    .upload-box .icon { font-size: 2.4rem; margin-bottom: 8px; }
+    .upload-box .label { font-weight: 600; color: var(--text); }
+    .upload-box .hint { font-size: 0.8rem; color: var(--text-light); margin-top: 4px; }
+    .upload-box input[type="file"] {
+      position: absolute; inset: 0; opacity: 0; cursor: pointer;
+    }
+    .upload-box .preview {
+      max-width: 100%; max-height: 160px; border-radius: var(--radius-sm);
+      display: none; margin: 0 auto;
+    }
+    .upload-box.has-image .preview { display: block; }
+    .upload-box.has-image .icon,
+    .upload-box.has-image .label,
+    .upload-box.has-image .hint { display: none; }
+
+    /* ===== Gender Select ===== */
+    .gender-select {
+      display: flex; justify-content: center; gap: 16px;
+      margin: 0 auto 28px; max-width: 400px;
+    }
+    .gender-btn {
+      flex: 1;
+      padding: 12px 20px;
+      border: 2px solid #E8D0D0;
+      border-radius: var(--radius-sm);
+      background: var(--white);
+      cursor: pointer;
+      font-size: 1rem; font-weight: 600;
+      font-family: 'Nunito', sans-serif;
+      transition: all 0.2s;
+      text-align: center;
+    }
+    .gender-btn:hover { border-color: var(--pink); }
+    .gender-btn.active {
+      border-color: var(--pink);
+      background: var(--pink-light);
+      color: var(--pink-dark);
+    }
+    .gender-btn .emoji { font-size: 1.3rem; margin-right: 4px; }
+
+    /* ===== CTA Button ===== */
+    .cta-button {
+      display: block;
+      width: 100%; max-width: 400px;
+      margin: 0 auto;
+      padding: 18px 32px;
+      background: linear-gradient(135deg, var(--pink) 0%, var(--coral) 100%);
+      color: white;
+      border: none;
+      border-radius: 50px;
+      font-size: 1.2rem;
+      font-weight: 700;
+      font-family: 'Nunito', sans-serif;
+      cursor: pointer;
+      transition: all 0.3s;
+      box-shadow: var(--shadow);
+      text-align: center;
+    }
+    .cta-button:hover {
+      transform: translateY(-2px);
+      box-shadow: var(--shadow-hover);
+    }
+    .cta-button:disabled {
+      opacity: 0.5; cursor: not-allowed; transform: none;
+    }
+    .cta-button .sub {
+      display: block;
+      font-size: 0.8rem;
+      font-weight: 400;
+      opacity: 0.85;
+      margin-top: 2px;
+    }
+
+    /* ===== Trust Badges ===== */
+    .trust {
+      text-align: center;
+      margin-top: 20px;
+      font-size: 0.9rem;
+      color: var(--text-light);
+    }
+    .trust .checks {
+      display: flex; justify-content: center; gap: 20px; flex-wrap: wrap;
+      margin-top: 10px;
+    }
+    .trust .checks span { display: inline-flex; align-items: center; gap: 4px; }
+
+    /* ===== Section: How It Works ===== */
+    .how-it-works {
+      padding: 60px 0;
+      background: var(--white);
+    }
+    .steps {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 24px;
+      margin-top: 32px;
+    }
+    @media (max-width: 640px) {
+      .steps { grid-template-columns: 1fr; }
+    }
+    .step-card {
+      text-align: center;
+      padding: 28px 20px;
+      border-radius: var(--radius);
+      background: var(--cream);
+      transition: all 0.3s;
+    }
+    .step-card:hover { box-shadow: var(--shadow); }
+    .step-card .num {
+      width: 44px; height: 44px;
+      background: var(--pink);
+      color: white;
+      border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+      font-family: 'Nunito', sans-serif;
+      font-weight: 800; font-size: 1.2rem;
+      margin: 0 auto 12px;
+    }
+    .step-card .emoji { font-size: 2rem; margin-bottom: 8px; display: block; }
+
+    /* ===== Section: Testimonials ===== */
+    .testimonials {
+      padding: 60px 0;
+      background: var(--cream);
+    }
+    .testimonial-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 20px;
+      margin-top: 32px;
+    }
+    @media (max-width: 560px) {
+      .testimonial-grid { grid-template-columns: 1fr; }
+    }
+    .testimonial-card {
+      background: var(--white);
+      padding: 24px;
+      border-radius: var(--radius);
+      box-shadow: 0 2px 12px rgba(0,0,0,0.04);
+    }
+    .testimonial-card .stars { color: #FFB800; letter-spacing: 2px; font-size: 0.9rem; }
+    .testimonial-card .text { margin: 8px 0; font-size: 0.95rem; color: var(--text); }
+    .testimonial-card .author { font-weight: 600; font-size: 0.85rem; color: var(--text-light); }
+
+    /* ===== Section: Pricing ===== */
+    .pricing {
+      padding: 60px 0;
+      background: var(--white);
+    }
+    .pricing-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 24px;
+      max-width: 640px;
+      margin: 32px auto 0;
+    }
+    @media (max-width: 560px) {
+      .pricing-grid { grid-template-columns: 1fr; }
+    }
+    .pricing-card {
+      background: var(--cream);
+      border-radius: var(--radius);
+      padding: 32px 24px;
+      text-align: center;
+      border: 2px solid transparent;
+      transition: all 0.3s;
+      position: relative;
+    }
+    .pricing-card:hover { box-shadow: var(--shadow); }
+    .pricing-card.featured {
+      border-color: var(--pink);
+      background: var(--white);
+      box-shadow: var(--shadow);
+    }
+    .pricing-card.featured .popular-badge {
+      position: absolute;
+      top: -12px; left: 50%;
+      transform: translateX(-50%);
+      background: var(--pink);
+      color: white;
+      padding: 4px 18px;
+      border-radius: 20px;
+      font-size: 0.8rem;
+      font-weight: 700;
+    }
+    .pricing-card h3 { font-size: 1.4rem; margin-bottom: 4px; }
+    .pricing-card .price {
+      font-family: 'Nunito', sans-serif;
+      font-size: 2.6rem;
+      font-weight: 800;
+      color: var(--pink);
+    }
+    .pricing-card .price span { font-size: 1rem; color: var(--text-light); font-weight: 400; }
+    .pricing-card .old-price {
+      text-decoration: line-through;
+      color: var(--text-light);
+      font-size: 1.1rem;
+      margin-left: 8px;
+    }
+    .pricing-card ul {
+      list-style: none;
+      text-align: left;
+      margin: 20px 0;
+    }
+    .pricing-card ul li {
+      padding: 6px 0;
+      font-size: 0.9rem;
+      display: flex; align-items: center; gap: 8px;
+    }
+    .pricing-card .buy-btn {
+      display: block;
+      width: 100%;
+      padding: 14px;
+      border: none;
+      border-radius: 50px;
+      font-size: 1rem;
+      font-weight: 700;
+      font-family: 'Nunito', sans-serif;
+      cursor: pointer;
+      transition: all 0.3s;
+      text-decoration: none;
+    }
+    .pricing-card .buy-btn.primary {
+      background: linear-gradient(135deg, var(--pink) 0%, var(--coral) 100%);
+      color: white;
+    }
+    .pricing-card .buy-btn.secondary {
+      background: var(--white);
+      color: var(--pink);
+      border: 2px solid var(--pink);
+    }
+    .pricing-card .buy-btn:hover { transform: translateY(-2px); box-shadow: var(--shadow-hover); }
+
+    /* ===== Section: FAQ ===== */
+    .faq {
+      padding: 60px 0;
+      background: var(--cream);
+    }
+    .faq-list { max-width: 640px; margin: 24px auto 0; }
+    .faq-item {
+      background: var(--white);
+      border-radius: var(--radius-sm);
+      margin-bottom: 12px;
+      overflow: hidden;
+    }
+    .faq-q {
+      padding: 18px 20px;
+      font-weight: 600;
+      cursor: pointer;
+      display: flex; justify-content: space-between; align-items: center;
+      transition: background 0.2s;
+    }
+    .faq-q:hover { background: var(--pink-light); }
+    .faq-q .arrow { transition: transform 0.3s; font-size: 0.8rem; }
+    .faq-item.open .faq-q .arrow { transform: rotate(180deg); }
+    .faq-a {
+      max-height: 0;
+      overflow: hidden;
+      transition: max-height 0.3s ease;
+      padding: 0 20px;
+      color: var(--text-light);
+      font-size: 0.95rem;
+      line-height: 1.6;
+    }
+    .faq-item.open .faq-a {
+      max-height: 300px;
+      padding: 0 20px 18px;
+    }
+
+    /* ===== Footer ===== */
+    footer {
+      padding: 32px 0;
+      text-align: center;
+      color: var(--text-light);
+      font-size: 0.85rem;
+      border-top: 1px solid #F0E0E0;
+    }
+    footer a { color: var(--pink); text-decoration: none; }
+    footer a:hover { text-decoration: underline; }
+    footer .disclaimer {
+      max-width: 560px;
+      margin: 12px auto 0;
+      font-size: 0.75rem;
+      opacity: 0.7;
+    }
+
+    /* ===== Section Divider ===== */
+    .section-divider { text-align: center; padding: 4px 0; }
+    .section-divider .emoji { font-size: 1.6rem; }
+  </style>
+</head>
+<body>
+
+  <!-- ===== Header ===== -->
+  <header>
+    <div class="container-wide">
+      <div class="logo"><span>🤱</span> BabyLens</div>
+      <div class="badge">⭐ 4.9/5 · 10,000+ Parents</div>
+    </div>
+  </header>
+
+  <!-- ===== Hero ===== -->
+  <section class="hero">
+    <div class="container">
+      <span class="emoji-big">👶</span>
+      <h1>See Your Future Baby<br>Instantly</h1>
+      <p class="subtitle">Upload your photos and let AI show you what your future child will look like. Realistic, fast, and magical.</p>
+
+      <div class="rating">
+        <span class="stars">★★★★★</span>
+        <span class="num">4.9</span>
+        <span>· 10,000+ happy parents</span>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== Upload Section ===== -->
+  <section class="upload-section" id="generator">
+    <div class="container">
+      <div class="upload-grid">
+        <div class="upload-box" id="momBox">
+          <input type="file" accept="image/*" id="momInput">
+          <div class="icon">👩</div>
+          <div class="label">Upload Mom's Photo</div>
+          <div class="hint">Clear face, no heavy makeup</div>
+          <img class="preview" id="momPreview" alt="Mom photo">
+        </div>
+        <div class="upload-box" id="dadBox">
+          <input type="file" accept="image/*" id="dadInput">
+          <div class="icon">👨</div>
+          <div class="label">Upload Dad's Photo</div>
+          <div class="hint">Clear face, no beard if possible</div>
+          <img class="preview" id="dadPreview" alt="Dad photo">
+        </div>
+      </div>
+
+      <div class="gender-select">
+        <button class="gender-btn active" data-gender="both">
+          <span class="emoji">👶</span> Both
+        </button>
+        <button class="gender-btn" data-gender="boy">
+          <span class="emoji">👦</span> Boy
+        </button>
+        <button class="gender-btn" data-gender="girl">
+          <span class="emoji">👧</span> Girl
+        </button>
+      </div>
+
+      <button class="cta-button" id="generateBtn">
+        ✨ Generate My Baby
+        <span class="sub">Starting at $9 · One-time payment</span>
+      </button>
+
+      <div class="trust">
+        <div class="checks">
+          <span>✅ Instant delivery to email</span>
+          <span>🔒 No storage, privacy first</span>
+          <span>💵 100% money-back guarantee</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== How It Works ===== -->
+  <section class="how-it-works">
+    <div class="container">
+      <h2>How It Works</h2>
+      <p class="subtitle">Three simple steps to meet your future baby</p>
+      <div class="steps">
+        <div class="step-card">
+          <span class="emoji">📸</span>
+          <div class="num">1</div>
+          <h3>Upload Photos</h3>
+          <p style="font-size:0.9rem;color:var(--text-light);margin-top:4px;">Upload clear photos of both parents</p>
+        </div>
+        <div class="step-card">
+          <span class="emoji">🤖</span>
+          <div class="num">2</div>
+          <h3>AI Magic</h3>
+          <p style="font-size:0.9rem;color:var(--text-light);margin-top:4px;">Our AI blends facial features instantly</p>
+        </div>
+        <div class="step-card">
+          <span class="emoji">📬</span>
+          <div class="num">3</div>
+          <h3>Receive & Share</h3>
+          <p style="font-size:0.9rem;color:var(--text-light);margin-top:4px;">Get HD photos in your email, share with family</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== Testimonials ===== -->
+  <section class="testimonials">
+    <div class="container">
+      <h2>❤️ Loved by Thousands</h2>
+      <p class="subtitle">Real couples who met their future baby</p>
+      <div class="testimonial-grid">
+        <div class="testimonial-card">
+          <div class="stars">★★★★★</div>
+          <p class="text">"OMG! We cried when we saw the photos. It looks just like us! We're having a baby girl in 3 months and now we can't wait!"</p>
+          <p class="author">— Sarah & Mike</p>
+        </div>
+        <div class="testimonial-card">
+          <div class="stars">★★★★★</div>
+          <p class="text">"I got this as a gift for my pregnant sister. She was so emotional seeing her future baby. Best gift ever!"</p>
+          <p class="author">— Jessica</p>
+        </div>
+        <div class="testimonial-card">
+          <div class="stars">★★★★★</div>
+          <p class="text">"The resemblance is uncanny. We showed it to our family and everyone was blown away. Totally worth it!"</p>
+          <p class="author">— David & Emma</p>
+        </div>
+        <div class="testimonial-card">
+          <div class="stars">★★★★★</div>
+          <p class="text">"We were curious and tried it for fun. The results were so realistic we couldn't stop smiling. Highly recommend!"</p>
+          <p class="author">— Tom & Lisa</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== Pricing ===== -->
+  <section class="pricing" id="pricing">
+    <div class="container">
+      <h2>Choose Your Plan</h2>
+      <p class="subtitle">One-time payment, no subscription. Your photos delivered instantly.</p>
+      <div class="pricing-grid">
+        <div class="pricing-card">
+          <h3>Basic</h3>
+          <div class="price">$9 <span>/ one-time</span></div>
+          <ul>
+            <li>✅ 8 HD baby photos (4 boy + 4 girl)</li>
+            <li>✅ Realistic AI generation</li>
+            <li>✅ Delivered via email</li>
+            <li>✅ Money-back guarantee</li>
+          </ul>
+          <a class="buy-btn secondary" href="https://www.paypal.com/cgi-bin/webscr?cmd=_xclick&business=4886458%40qq.com&item_name=BabyLens+AI+Basic&amount=9.99&currency_code=USD&return=https%3A%2F%2Fbabylens-ai.pages.dev&cancel_return=https%3A%2F%2Fbabylens-ai.pages.dev" target="_blank">Get Basic</a>
+        </div>
+        <div class="pricing-card featured">
+          <div class="popular-badge">🌟 Most Popular</div>
+          <h3>Premium</h3>
+          <div class="price">$17 <span class="old-price">$27</span></div>
+          <ul>
+            <li>✅ 32 photos across all life stages</li>
+            <li>✅ Baby · Teen · Adult · Elderly</li>
+            <li>✅ Higher resolution</li>
+            <li>✅ Money-back guarantee</li>
+          </ul>
+          <a class="buy-btn primary" href="https://www.paypal.com/cgi-bin/webscr?cmd=_xclick&business=4886458%40qq.com&item_name=BabyLens+AI+Premium&amount=17.99&currency_code=USD&return=https%3A%2F%2Fbabylens-ai.pages.dev&cancel_return=https%3A%2F%2Fbabylens-ai.pages.dev" target="_blank">Get Premium</a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== FAQ ===== -->
+  <section class="faq">
+    <div class="container">
+      <h2>❓ Frequently Asked Questions</h2>
+      <div class="faq-list">
+        <div class="faq-item">
+          <div class="faq-q" onclick="toggleFaq(this)">
+            Is this accurate? Will it really look like my baby?
+            <span class="arrow">▼</span>
+          </div>
+          <div class="faq-a">Our AI analyzes facial features from both parents' photos — including eye shape, nose, skin tone, and more — to generate a realistic prediction. While genetics is complex and no AI can guarantee 100% accuracy, thousands of parents have been amazed by the resemblance. This is for entertainment and inspiration purposes.</div>
+        </div>
+        <div class="faq-item">
+          <div class="faq-q" onclick="toggleFaq(this)">
+            How long does it take?
+            <span class="arrow">▼</span>
+          </div>
+          <div class="faq-a">Most orders are delivered within 30 minutes! Premium orders are processed even faster. You'll receive an email with your photos once they're ready.</div>
+        </div>
+        <div class="faq-item">
+          <div class="faq-q" onclick="toggleFaq(this)">
+            What kind of photos should I upload?
+            <span class="arrow">▼</span>
+          </div>
+          <div class="faq-a">Clear, front-facing photos with good lighting work best. Avoid heavy makeup, beards, sunglasses, or filters. The clearer the photo, the more realistic the result!</div>
+        </div>
+        <div class="faq-item">
+          <div class="faq-q" onclick="toggleFaq(this)">
+            Is my privacy protected?
+            <span class="arrow">▼</span>
+          </div>
+          <div class="faq-a">Absolutely. Your photos are only used to generate your baby images and are deleted immediately after processing. We never store, share, or use your photos for any other purpose.</div>
+        </div>
+        <div class="faq-item">
+          <div class="faq-q" onclick="toggleFaq(this)">
+            Can I get a refund if I don't like it?
+            <span class="arrow">▼</span>
+          </div>
+          <div class="faq-a">Yes! We offer a 100% money-back guarantee. If you're not happy with the results for any reason, just email us within 7 days and we'll refund your purchase — no questions asked.</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== Footer ===== -->
+  <footer>
+    <div class="container">
+      <p>© 2026 <a href="#">BabyLens AI</a> · <a href="#">Privacy Policy</a> · <a href="#">Terms of Service</a></p>
+      <p class="disclaimer">Disclaimer: BabyLens AI generates images for entertainment purposes only. Results are AI-predicted and may not reflect actual genetics. Not intended for medical or genetic information.</p>
+    </div>
+  </footer>
+
+  <script>
+    // ===== Upload Preview =====
+    ['mom', 'dad'].forEach(id => {
+      const input = document.getElementById(id + 'Input');
+      const box = document.getElementById(id + 'Box');
+      const preview = document.getElementById(id + 'Preview');
+      input.addEventListener('change', function(e) {
+        const file = e.target.files[0];
+        if (file) {
+          const reader = new FileReader();
+          reader.onload = function(ev) {
+            preview.src = ev.target.result;
+            box.classList.add('has-image');
+          };
+          reader.readAsDataURL(file);
+        }
+      });
+    });
+
+    // ===== Gender Select =====
+    document.querySelectorAll('.gender-btn').forEach(btn => {
+      btn.addEventListener('click', function() {
+        document.querySelectorAll('.gender-btn').forEach(b => b.classList.remove('active'));
+        this.classList.add('active');
+      });
+    });
+
+    // ===== FAQ Toggle =====
+    function toggleFaq(el) {
+      const item = el.parentElement;
+      item.classList.toggle('open');
+    }
+
+    // ===== Generate Button =====
+    document.getElementById('generateBtn').addEventListener('click', function() {
+      const momFile = document.getElementById('momInput').files[0];
+      const dadFile = document.getElementById('dadInput').files[0];
+      if (!momFile || !dadFile) {
+        alert('Please upload both Mom and Dad photos first!');
+        return;
+      }
+      document.getElementById('pricing').scrollIntoView({ behavior: 'smooth' });
+    });
+  </script>
+
+</body>
+</html>
