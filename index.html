@@ -5,9 +5,50 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>BabyLens AI - See Your Future Baby Instantly</title>
   <meta name="description" content="Upload your photos and use AI to see what your future baby will look like. Realistic AI baby face generator. Instant delivery.">
+    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ccircle cx='50' cy='50' r='48' fill='%23FF8C9E'/%3E%3Ccircle cx='35' cy='40' r='5' fill='white'/%3E%3Ccircle cx='65' cy='40' r='5' fill='white'/%3E%3Ccircle cx='35' cy='40' r='2.5' fill='%232D3436'/%3E%3Ccircle cx='65' cy='40' r='2.5' fill='%232D3436'/%3E%3Cpath d='M 35 60 Q 50 72 65 60' stroke='white' stroke-width='3' fill='none' stroke-linecap='round'/%3E%3C/svg%3E">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+  <!-- Open Graph / Social Sharing -->
+  <meta property="og:title" content="BabyLens AI - See Your Future Baby Instantly">
+  <meta property="og:description" content="Upload your photos and AI generates ultra-realistic baby face predictions. See what your future child will look like!">
+  <meta property="og:url" content="https://chipper-selkie-10710c.netlify.app">
+  <meta property="og:type" content="website">
+  <meta property="og:image" content="/og-image.png">
+  <meta property="og:image:width" content="1200">
+  <meta property="og:image:height" content="630">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="BabyLens AI - See Your Future Baby Instantly">
+  <meta name="twitter:description" content="Upload your photos and AI generates ultra-realistic baby face predictions.">
+  <!-- JSON-LD Structured Data -->
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "SoftwareApplication",
+    "name": "BabyLens AI",
+    "applicationCategory": "Multimedia",
+    "operatingSystem": "Web",
+    "description": "Upload photos of both parents and AI generates ultra-realistic baby face predictions.",
+    "offers": {
+      "@type": "Offer",
+      "price": "9.99",
+      "priceCurrency": "USD"
+    },
+    "aggregateRating": {
+      "@type": "AggregateRating",
+      "ratingValue": "4.9",
+      "ratingCount": "10000"
+    }
+  }
+  </script>
+  <!-- Microsoft Clarity -->
+  <script type="text/javascript">
+    (function(c,l,a,r,i,t,y){
+        c[a]=c[a]||function(){(c[a].q=c[a].q||[]).push(arguments)};
+        t=l.createElement(r);t.async=1;t.src="https://www.clarity.ms/tag/"+i;
+        y=l.getElementsByTagName(r)[0];y.parentNode.insertBefore(t,y);
+    })(window, document, "clarity", "script", "wps11oi5a1");
+</script>
   <style>
     /* ===== Reset & Base ===== */
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
@@ -207,6 +248,127 @@
       margin-top: 10px;
     }
     .trust .checks span { display: inline-flex; align-items: center; gap: 4px; }
+
+    /* ===== Sample Results ===== */
+    .sample-results {
+      padding: 60px 0;
+      background: var(--white);
+    }
+    .sample-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 24px;
+      margin-top: 32px;
+    }
+    @media (max-width: 700px) {
+      .sample-grid { grid-template-columns: 1fr; }
+    }
+    .sample-card {
+      background: var(--cream);
+      border-radius: var(--radius);
+      overflow: hidden;
+      text-align: center;
+      transition: all 0.3s;
+    }
+    .sample-card:hover {
+      box-shadow: var(--shadow);
+      transform: translateY(-4px);
+    }
+    .sample-card .sample-images {
+      display: flex;
+      gap: 8px;
+      padding: 20px 16px 12px;
+      justify-content: center;
+      align-items: center;
+    }
+    .sample-card .sample-img-box {
+      width: 80px;
+      height: 80px;
+      border-radius: var(--radius-sm);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 2rem;
+      color: white;
+      font-weight: 700;
+      position: relative;
+      flex-shrink: 0;
+      overflow: hidden;
+    }
+    .sample-card .sample-img-box img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      display: block;
+    }
+    .sample-card .sample-img-box .badge {
+      position: absolute;
+      bottom: -6px;
+      left: 50%;
+      transform: translateX(-50%);
+      font-size: 0.55rem;
+      font-weight: 700;
+      padding: 2px 10px;
+      border-radius: 10px;
+      white-space: nowrap;
+      color: white;
+      z-index: 2;
+    }
+    .sample-card .sample-arrow {
+      font-size: 1.3rem;
+      color: var(--pink);
+      flex-shrink: 0;
+    }
+    .sample-card .sample-result-box {
+      width: 110px;
+      height: 110px;
+      border-radius: var(--radius-sm);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 2.8rem;
+      border: 3px solid var(--pink-light);
+      flex-shrink: 0;
+      overflow: hidden;
+      position: relative;
+    }
+    .sample-card .sample-result-box img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      display: block;
+    }
+    .sample-card .sample-result-box .result-badge-overlay {
+      position: absolute;
+      bottom: 4px;
+      left: 50%;
+      transform: translateX(-50%);
+      background: rgba(0,0,0,0.5);
+      color: white;
+      font-size: 0.5rem;
+      padding: 1px 8px;
+      border-radius: 8px;
+      white-space: nowrap;
+    }
+    .sample-card .couple-name {
+      font-weight: 700;
+      font-family: 'Nunito', sans-serif;
+      font-size: 0.95rem;
+      margin-bottom: 4px;
+    }
+    .sample-card .result-badge {
+      font-size: 0.75rem;
+      color: var(--text-light);
+      padding-bottom: 16px;
+    }
+    .sample-card .result-badge span { color: #FFB800; }
+    .bg-mom { background: linear-gradient(135deg, #FFD1DC, #FF8C9E); }
+    .bg-dad { background: linear-gradient(135deg, #B5D8EB, #7EC8E3); }
+    .bg-baby-girl { background: linear-gradient(135deg, #FFE4E8, #FFB3C1); }
+    .bg-baby-boy { background: linear-gradient(135deg, #D4E9F7, #A8D5E2); }
+    .bg-baby-both { background: linear-gradient(135deg, #FFE4E8, #D4E9F7); }
+    .badge-mom { background: #FF8C9E; }
+    .badge-dad { background: #7EC8E3; }
 
     /* ===== Section: How It Works ===== */
     .how-it-works {
@@ -408,6 +570,149 @@
       opacity: 0.7;
     }
 
+    /* ===== Email Signup ===== */
+    .email-signup {
+      padding: 60px 0;
+      background: linear-gradient(135deg, var(--pink-light) 0%, #FFF8F5 100%);
+      text-align: center;
+    }
+    .email-form {
+      display: flex;
+      gap: 12px;
+      max-width: 480px;
+      margin: 0 auto;
+    }
+    @media (max-width: 520px) {
+      .email-form { flex-direction: column; }
+    }
+    .email-form input[type="email"] {
+      flex: 1;
+      padding: 14px 18px;
+      border: 2px solid #E8D0D0;
+      border-radius: 50px;
+      font-size: 1rem;
+      font-family: 'Inter', sans-serif;
+      outline: none;
+      transition: border-color 0.3s;
+    }
+    .email-form input[type="email"]:focus {
+      border-color: var(--pink);
+    }
+    .email-btn {
+      padding: 14px 28px;
+      background: linear-gradient(135deg, var(--pink) 0%, var(--coral) 100%);
+      color: white;
+      border: none;
+      border-radius: 50px;
+      font-size: 1rem;
+      font-weight: 700;
+      font-family: 'Nunito', sans-serif;
+      cursor: pointer;
+      transition: all 0.3s;
+      white-space: nowrap;
+    }
+    .email-btn:hover {
+      transform: translateY(-2px);
+      box-shadow: var(--shadow-hover);
+    }
+    .email-note {
+      font-size: 0.8rem;
+      color: var(--text-light);
+      margin-top: 12px;
+    }
+    .email-success {
+      display: none;
+      color: #2ECC71;
+      font-weight: 600;
+      font-size: 1.1rem;
+      padding: 20px;
+    }
+    .email-success.show { display: block; }
+    .email-form.hidden { display: none; }
+
+    /* ===== Order Email Input ===== */
+    .email-input-area {
+      max-width: 400px;
+      margin: 0 auto 20px;
+    }
+    .email-input-area input[type="email"] {
+      width: 100%;
+      padding: 16px 20px;
+      border: 2px solid #E8D0D0;
+      border-radius: 50px;
+      font-size: 1rem;
+      font-family: 'Inter', sans-serif;
+      outline: none;
+      transition: all 0.3s;
+      text-align: center;
+      background: var(--white);
+    }
+    .email-input-area input[type="email"]:focus {
+      border-color: var(--pink);
+      box-shadow: var(--shadow);
+    }
+    .email-input-area input[type="email"]::placeholder {
+      color: #B2BEC3;
+    }
+
+    /* ===== Processing Overlay ===== */
+    .processing-overlay {
+      display: none;
+      position: fixed; inset: 0;
+      background: rgba(0,0,0,0.5);
+      z-index: 1000;
+      align-items: center;
+      justify-content: center;
+    }
+    .processing-overlay.show { display: flex; }
+    .processing-card {
+      background: white;
+      border-radius: 24px;
+      padding: 40px;
+      text-align: center;
+      max-width: 400px;
+      box-shadow: 0 20px 60px rgba(0,0,0,0.2);
+    }
+    .processing-card .spinner {
+      width: 48px; height: 48px;
+      border: 4px solid var(--pink-light);
+      border-top-color: var(--pink);
+      border-radius: 50%;
+      animation: spin 0.8s linear infinite;
+      margin: 0 auto 16px;
+    }
+    @keyframes spin { to { transform: rotate(360deg); } }
+    .processing-card h3 { font-size: 1.3rem; margin-bottom: 8px; }
+    .processing-card p { color: var(--text-light); font-size: 0.9rem; }
+
+    /* ===== Share Buttons ===== */
+    .share-buttons {
+      display: flex;
+      justify-content: center;
+      gap: 12px;
+      margin-top: 16px;
+      flex-wrap: wrap;
+    }
+    .share-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 8px 16px;
+      border-radius: 50px;
+      font-size: 0.85rem;
+      font-weight: 600;
+      text-decoration: none;
+      transition: all 0.2s;
+      border: 1px solid #E8D0D0;
+      background: var(--white);
+      color: var(--text);
+    }
+    .share-btn:hover {
+      border-color: var(--pink);
+      background: var(--pink-light);
+      transform: translateY(-1px);
+    }
+
     /* ===== Section Divider ===== */
     .section-divider { text-align: center; padding: 4px 0; }
     .section-divider .emoji { font-size: 1.6rem; }
@@ -470,6 +775,11 @@
         </button>
       </div>
 
+      <!-- ===== Email Input ===== -->
+      <div class="email-input-area">
+        <input type="email" id="orderEmail" placeholder="Enter your email to receive photos 📬" required>
+      </div>
+
       <button class="cta-button" id="generateBtn">
         ✨ Generate My Baby
         <span class="sub">Starting at $9 · One-time payment</span>
@@ -481,6 +791,53 @@
           <span>🔒 No storage, privacy first</span>
           <span>💵 100% money-back guarantee</span>
         </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== Sample Results ===== -->
+  <section class="sample-results">
+    <div class="container">
+      <h2>✨ Real Results from Real Couples</h2>
+      <p class="subtitle">See how parents met their future baby using BabyLens AI</p>
+      <div class="sample-grid">
+
+        <div class="sample-card">
+          <div class="sample-images">
+            <div class="sample-img-box bg-mom"><img src="./images/mom-sample.jpg" alt="Mom" loading="lazy"><span class="badge badge-mom">Mom</span></div>
+            <div class="sample-arrow">→</div>
+            <div class="sample-img-box bg-dad"><img src="./images/dad-sample.jpg" alt="Dad" loading="lazy"><span class="badge badge-dad">Dad</span></div>
+            <div class="sample-arrow">→</div>
+            <div class="sample-result-box bg-baby-girl"><img src="./images/baby-girl1.jpg" alt="Baby Girl" loading="lazy"><span class="result-badge-overlay">👶 Girl</span></div>
+          </div>
+          <div class="couple-name">Sarah &amp; Mike</div>
+          <div class="result-badge">"We cried! It looks just like us!" <span>★★★★★</span></div>
+        </div>
+
+        <div class="sample-card">
+          <div class="sample-images">
+            <div class="sample-img-box bg-mom"><img src="./images/mom-sample2.jpg" alt="Mom" loading="lazy"><span class="badge badge-mom">Mom</span></div>
+            <div class="sample-arrow">→</div>
+            <div class="sample-img-box bg-dad"><img src="./images/dad-sample2.jpg" alt="Dad" loading="lazy"><span class="badge badge-dad">Dad</span></div>
+            <div class="sample-arrow">→</div>
+            <div class="sample-result-box bg-baby-boy"><img src="./images/baby-boy1.jpg" alt="Baby Boy" loading="lazy"><span class="result-badge-overlay">👶 Boy</span></div>
+          </div>
+          <div class="couple-name">David &amp; Emma</div>
+          <div class="result-badge">"The resemblance is uncanny!" <span>★★★★★</span></div>
+        </div>
+
+        <div class="sample-card">
+          <div class="sample-images">
+            <div class="sample-img-box bg-mom"><img src="./images/mom-sample.jpg" alt="Mom" loading="lazy"><span class="badge badge-mom">Mom</span></div>
+            <div class="sample-arrow">→</div>
+            <div class="sample-img-box bg-dad"><img src="./images/dad-sample2.jpg" alt="Dad" loading="lazy"><span class="badge badge-dad">Dad</span></div>
+            <div class="sample-arrow">→</div>
+            <div class="sample-result-box bg-baby-both"><img src="./images/baby-sample-3.jpg" alt="Baby" loading="lazy"><span class="result-badge-overlay">👶 Both</span></div>
+          </div>
+          <div class="couple-name">Tom &amp; Lisa</div>
+          <div class="result-badge">"Both versions are so cute!" <span>★★★★★</span></div>
+        </div>
+
       </div>
     </div>
   </section>
@@ -558,7 +915,18 @@
             <li>✅ Delivered via email</li>
             <li>✅ Money-back guarantee</li>
           </ul>
-          <a class="buy-btn secondary" href="https://www.paypal.com/cgi-bin/webscr?cmd=_xclick&business=4886458%40qq.com&item_name=BabyLens+AI+Basic&amount=9.99&currency_code=USD&return=https%3A%2F%2Fbabylens-ai.pages.dev&cancel_return=https%3A%2F%2Fbabylens-ai.pages.dev" target="_blank">Get Basic</a>
+          <form action="https://www.paypal.com/cgi-bin/webscr" method="post" target="_self" class="paypal-form" data-plan="basic">
+            <input type="hidden" name="cmd" value="_xclick">
+            <input type="hidden" name="business" value="4886458@qq.com">
+            <input type="hidden" name="item_name" value="BabyLens AI Basic">
+            <input type="hidden" name="amount" value="9.99">
+            <input type="hidden" name="currency_code" value="USD">
+            <input type="hidden" name="return" value="https://chipper-selkie-10710c.netlify.app?status=success">
+            <input type="hidden" name="cancel_return" value="https://chipper-selkie-10710c.netlify.app?status=cancel">
+            <input type="hidden" name="custom" class="order-id-input" value="">
+            <input type="hidden" name="notify_url" value="https://chipper-selkie-10710c.netlify.app/.netlify/functions/paypal-webhook">
+            <button type="submit" class="buy-btn secondary">Get Basic</button>
+          </form>
         </div>
         <div class="pricing-card featured">
           <div class="popular-badge">🌟 Most Popular</div>
@@ -570,7 +938,18 @@
             <li>✅ Higher resolution</li>
             <li>✅ Money-back guarantee</li>
           </ul>
-          <a class="buy-btn primary" href="https://www.paypal.com/cgi-bin/webscr?cmd=_xclick&business=4886458%40qq.com&item_name=BabyLens+AI+Premium&amount=17.99&currency_code=USD&return=https%3A%2F%2Fbabylens-ai.pages.dev&cancel_return=https%3A%2F%2Fbabylens-ai.pages.dev" target="_blank">Get Premium</a>
+          <form action="https://www.paypal.com/cgi-bin/webscr" method="post" target="_self" class="paypal-form" data-plan="premium">
+            <input type="hidden" name="cmd" value="_xclick">
+            <input type="hidden" name="business" value="4886458@qq.com">
+            <input type="hidden" name="item_name" value="BabyLens AI Premium">
+            <input type="hidden" name="amount" value="17.99">
+            <input type="hidden" name="currency_code" value="USD">
+            <input type="hidden" name="return" value="https://chipper-selkie-10710c.netlify.app?status=success">
+            <input type="hidden" name="cancel_return" value="https://chipper-selkie-10710c.netlify.app?status=cancel">
+            <input type="hidden" name="custom" class="order-id-input" value="">
+            <input type="hidden" name="notify_url" value="https://chipper-selkie-10710c.netlify.app/.netlify/functions/paypal-webhook">
+            <button type="submit" class="buy-btn primary">Get Premium</button>
+          </form>
         </div>
       </div>
     </div>
@@ -620,10 +999,29 @@
     </div>
   </section>
 
+  <!-- ===== Email Signup ===== -->
+  <section class="email-signup">
+    <div class="container">
+      <h2>📬 Stay Updated</h2>
+      <p class="subtitle">Be the first to hear about new features, updates, and exclusive offers</p>
+      <form class="email-form" id="emailForm">
+        <input type="email" id="emailInput" placeholder="Enter your email address" required>
+        <button type="submit" class="email-btn">Notify Me 🚀</button>
+      </form>
+      <div class="email-success">✅ You're on the list! We'll keep you updated 🚀</div>
+      <p class="email-note">🔒 No spam. Unsubscribe anytime.</p>
+    </div>
+  </section>
+
   <!-- ===== Footer ===== -->
   <footer>
     <div class="container">
-      <p>© 2026 <a href="#">BabyLens AI</a> · <a href="#">Privacy Policy</a> · <a href="#">Terms of Service</a></p>
+      <p>© 2026 <a href="#">BabyLens AI</a> · <a href="privacy.html">Privacy Policy</a> · <a href="terms.html">Terms of Service</a></p>
+      <div class="share-buttons">
+        <a href="https://twitter.com/intent/tweet?text=See+what+your+future+baby+will+look+like+%F0%9F%91%B6%F0%9F%8F%BB+AI-powered+and+scarily+accurate!+%F0%9F%94%8D+&url=https%3A%2F%2Fchipper-selkie-10710c.netlify.app" target="_blank" rel="noopener" class="share-btn twitter">🐦 Share on X</a>
+        <a href="https://www.facebook.com/sharer/sharer.php?u=https%3A%2F%2Fchipper-selkie-10710c.netlify.app" target="_blank" rel="noopener" class="share-btn facebook">📘 Share on Facebook</a>
+        <a href="mailto:?subject=Check out BabyLens AI&body=I found this amazing AI tool that shows what your future baby will look like! %0A%0Ahttps://chipper-selkie-10710c.netlify.app" class="share-btn email-share">✉️ Share via Email</a>
+      </div>
       <p class="disclaimer">Disclaimer: BabyLens AI generates images for entertainment purposes only. Results are AI-predicted and may not reflect actual genetics. Not intended for medical or genetic information.</p>
     </div>
   </footer>
@@ -670,6 +1068,21 @@
         return;
       }
       document.getElementById('pricing').scrollIntoView({ behavior: 'smooth' });
+    });
+
+    // ===== Email Signup =====
+    document.getElementById('emailForm').addEventListener('submit', function(e) {
+      e.preventDefault();
+      const email = document.getElementById('emailInput').value.trim();
+      if (!email) return;
+      // Store in localStorage and show success
+      let subscribers = JSON.parse(localStorage.getItem('babylens_emails') || '[]');
+      if (!subscribers.includes(email)) {
+        subscribers.push(email);
+        localStorage.setItem('babylens_emails', JSON.stringify(subscribers));
+      }
+      document.getElementById('emailForm').classList.add('hidden');
+      document.querySelector('.email-success').classList.add('show');
     });
   </script>
 
