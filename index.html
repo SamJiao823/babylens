@@ -12,7 +12,7 @@
   <!-- Open Graph / Social Sharing -->
   <meta property="og:title" content="BabyLens AI - See Your Future Baby Instantly">
   <meta property="og:description" content="Upload your photos and AI generates ultra-realistic baby face predictions. See what your future child will look like!">
-  <meta property="og:url" content="https://chipper-selkie-10710c.netlify.app">
+  <meta property="og:url" content="https://babylens.pages.dev">
   <meta property="og:type" content="website">
   <meta property="og:image" content="/og-image.png">
   <meta property="og:image:width" content="1200">
@@ -740,6 +740,10 @@
     /* ===== 滚动条美化 ===== */
     #adminOrderList::-webkit-scrollbar { width: 4px; }
     #adminOrderList::-webkit-scrollbar-thumb { background: #ddd; border-radius: 4px; }
+
+    /* ===== 动画 ===== */
+    @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+    @keyframes popIn { from { opacity: 0; transform: scale(0.7); } to { opacity: 1; transform: scale(1); } }
     #adminOrderList::-webkit-scrollbar-track { background: transparent; }
   </style>
 </head>
@@ -984,10 +988,9 @@
             <input type="hidden" name="item_name" value="BabyLens AI Basic">
             <input type="hidden" name="amount" value="9.99">
             <input type="hidden" name="currency_code" value="USD">
-            <input type="hidden" name="return" value="https://chipper-selkie-10710c.netlify.app?status=success">
-            <input type="hidden" name="cancel_return" value="https://chipper-selkie-10710c.netlify.app?status=cancel">
+            <input type="hidden" name="return" value="https://babylens.pages.dev?status=success">
+            <input type="hidden" name="cancel_return" value="https://babylens.pages.dev?status=cancel">
             <input type="hidden" name="custom" class="order-id-input" value="">
-            <input type="hidden" name="notify_url" value="https://chipper-selkie-10710c.netlify.app/.netlify/functions/paypal-webhook">
             <button type="submit" class="buy-btn secondary">Get Basic</button>
           </form>
         </div>
@@ -1007,10 +1010,9 @@
             <input type="hidden" name="item_name" value="BabyLens AI Premium">
             <input type="hidden" name="amount" value="17.99">
             <input type="hidden" name="currency_code" value="USD">
-            <input type="hidden" name="return" value="https://chipper-selkie-10710c.netlify.app?status=success">
-            <input type="hidden" name="cancel_return" value="https://chipper-selkie-10710c.netlify.app?status=cancel">
+            <input type="hidden" name="return" value="https://babylens.pages.dev?status=success">
+            <input type="hidden" name="cancel_return" value="https://babylens.pages.dev?status=cancel">
             <input type="hidden" name="custom" class="order-id-input" value="">
-            <input type="hidden" name="notify_url" value="https://chipper-selkie-10710c.netlify.app/.netlify/functions/paypal-webhook">
             <button type="submit" class="buy-btn primary">Get Premium</button>
           </form>
         </div>
@@ -1068,8 +1070,8 @@
       <h2>🌟 Spread the Joy</h2>
       <p class="subtitle">Share BabyLens AI with friends and family — let them meet their future baby too!</p>
       <div style="display:flex;gap:12px;justify-content:center;flex-wrap:wrap;margin-top:20px;">
-        <a href="https://chipper-selkie-10710c.netlify.app" target="_blank" style="padding:12px 28px;background:var(--pink);color:white;border-radius:12px;text-decoration:none;font-weight:700;">🔗 Share Link</a>
-        <a href="mailto:?subject=Check out BabyLens AI&body=I found this amazing AI tool that shows what your future baby will look like! %0A%0Ahttps://chipper-selkie-10710c.netlify.app" style="padding:12px 28px;background:var(--coral);color:white;border-radius:12px;text-decoration:none;font-weight:700;">✉️ Tell a Friend</a>
+        <a href="https://babylens.pages.dev" target="_blank" style="padding:12px 28px;background:var(--pink);color:white;border-radius:12px;text-decoration:none;font-weight:700;">🔗 Share Link</a>
+        <a href="mailto:?subject=Check out BabyLens AI&body=I found this amazing AI tool that shows what your future baby will look like! %0A%0Ahttps://babylens.pages.dev" style="padding:12px 28px;background:var(--coral);color:white;border-radius:12px;text-decoration:none;font-weight:700;">✉️ Tell a Friend</a>
       </div>
     </div>
   </section>
@@ -1115,9 +1117,9 @@
     <div class="container">
       <p>© 2026 <a href="#">BabyLens AI</a> · <a href="privacy.html">Privacy Policy</a> · <a href="terms.html">Terms of Service</a></p>
       <div class="share-buttons">
-        <a href="https://twitter.com/intent/tweet?text=See+what+your+future+baby+will+look+like+%F0%9F%91%B6%F0%9F%8F%BB+AI-powered+and+scarily+accurate!+%F0%9F%94%8D+&url=https%3A%2F%2Fchipper-selkie-10710c.netlify.app" target="_blank" rel="noopener" class="share-btn twitter">🐦 Share on X</a>
-        <a href="https://www.facebook.com/sharer/sharer.php?u=https%3A%2F%2Fchipper-selkie-10710c.netlify.app" target="_blank" rel="noopener" class="share-btn facebook">📘 Share on Facebook</a>
-        <a href="mailto:?subject=Check out BabyLens AI&body=I found this amazing AI tool that shows what your future baby will look like! %0A%0Ahttps://chipper-selkie-10710c.netlify.app" class="share-btn email-share">✉️ Share via Email</a>
+        <a href="https://twitter.com/intent/tweet?text=See+what+your+future+baby+will+look+like+%F0%9F%91%B6%F0%9F%8F%BB+AI-powered+and+scarily+accurate!+%F0%9F%94%8D+&url=https%3A%2F%2Fbabylens.pages.dev" target="_blank" rel="noopener" class="share-btn twitter">🐦 Share on X</a>
+        <a href="https://www.facebook.com/sharer/sharer.php?u=https%3A%2F%2Fbabylens.pages.dev" target="_blank" rel="noopener" class="share-btn facebook">📘 Share on Facebook</a>
+        <a href="mailto:?subject=Check out BabyLens AI&body=I found this amazing AI tool that shows what your future baby will look like! %0A%0Ahttps://babylens.pages.dev" class="share-btn email-share">✉️ Share via Email</a>
       </div>
       <p class="disclaimer">Disclaimer: BabyLens AI generates images for entertainment purposes only. Results are AI-predicted and may not reflect actual genetics. Not intended for medical or genetic information.</p>
     </div>
@@ -1155,6 +1157,18 @@
     }
 
     // ===== Upload Preview（带压缩） =====
+    // ===== 上传时更新按钮状态 =====
+    function updateBtnState() {
+      const btn = document.getElementById('generateBtn');
+      if (momPhotoData && dadPhotoData) {
+        btn.innerHTML = '✅ Ready! See Plans & Pricing<span class="sub">Both photos uploaded — choose your plan below</span>';
+        btn.style.background = 'linear-gradient(135deg, #2ECC71, #27AE60)';
+      } else {
+        btn.innerHTML = '✨ See Plans & Pricing<span class="sub">Starting at $9.99 · One-time payment</span>';
+        btn.style.background = '';
+      }
+    }
+
     ['mom', 'dad'].forEach(id => {
       const input = document.getElementById(id + 'Input');
       const box = document.getElementById(id + 'Box');
@@ -1172,6 +1186,7 @@
           compressImage(file, 1024, function(data) {
             if (id === 'mom') momPhotoData = data;
             else dadPhotoData = data;
+            updateBtnState();
           });
         }
       });
@@ -1249,7 +1264,7 @@
       const errorEl = document.getElementById('generateError');
 
       try {
-        const res = await fetch('/.netlify/functions/generate', {
+        const res = await fetch('/generate', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({
@@ -1269,6 +1284,10 @@
           document.getElementById('resultDadImg').src = 'data:image/png;base64,' + data.images.babyFromDad;
           statusEl.style.display = 'none';
           resultEl.style.display = 'block';
+          // 滚动到结果区
+          document.getElementById('orderSuccess').scrollIntoView({ behavior: 'smooth', block: 'center' });
+          // 庆祝弹窗
+          showCelebration();
 
           // 标记订单已发货
           const updatedOrders = getOrders();
@@ -1339,6 +1358,22 @@
       });
     });
 
+    // ===== 庆祝弹窗 =====
+    function showCelebration() {
+      const overlay = document.createElement('div');
+      overlay.id = 'celebrationOverlay';
+      overlay.style.cssText = 'position:fixed;inset:0;z-index:3000;display:flex;align-items:center;justify-content:center;background:rgba(0,0,0,0.4);animation:fadeIn 0.3s ease;';
+      overlay.innerHTML = `
+        <div style="background:white;border-radius:24px;padding:40px;text-align:center;max-width:420px;box-shadow:0 20px 60px rgba(0,0,0,0.2);animation:popIn 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);">
+          <div style="font-size:4rem;margin-bottom:12px;">🎊</div>
+          <h2 style="color:#2ECC71;font-family:'Nunito',sans-serif;font-size:1.6rem;margin-bottom:8px;">Your Baby Photos Are Ready! 👶</h2>
+          <p style="color:#636E72;font-size:0.95rem;margin-bottom:20px;line-height:1.6;">Two unique versions generated from each parent's features. Right-click to save or use the download buttons below!</p>
+          <button onclick="document.getElementById('celebrationOverlay').remove()" style="padding:14px 40px;background:linear-gradient(135deg,#FF8C9E,#FF6B6B);color:white;border:none;border-radius:50px;font-size:1.1rem;font-weight:700;cursor:pointer;font-family:'Nunito',sans-serif;box-shadow:0 4px 20px rgba(255,140,158,0.3);">😍 Awesome, Show Me!</button>
+        </div>
+      `;
+      document.body.appendChild(overlay);
+    }
+
     // ===== 管理员面板功能 =====
     function renderAdmin() {
       const orders = getOrders();
@@ -1352,7 +1387,7 @@
       }
       let html = '';
       orders.forEach((o, i) => {
-        const planName = o.plan === 'basic' ? 'Basic ($9)' : 'Premium ($17)';
+        const planName = o.plan === 'basic' ? 'Basic ($9.99)' : 'Premium ($17.99)';
         const time = new Date(o.createdAt).toLocaleString('zh-CN', {hour12:false});
         const paidTime = o.paidAt ? new Date(o.paidAt).toLocaleString('zh-CN', {hour12:false}) : '';
         const statusMap = {pending:'⏳ 待付款', paid:'✅ 已付款-待处理', delivered:'📬 已发货'};
