@@ -301,6 +301,12 @@
       object-fit: cover;
       display: block;
     }
+    .sample-card .sample-img-box .initials {
+      font-size: 2rem;
+      font-weight: 800;
+      color: rgba(255,255,255,0.9);
+      text-shadow: 0 1px 3px rgba(0,0,0,0.1);
+    }
     .sample-card .sample-img-box .badge {
       position: absolute;
       bottom: -6px;
@@ -716,6 +722,25 @@
     /* ===== Section Divider ===== */
     .section-divider { text-align: center; padding: 4px 0; }
     .section-divider .emoji { font-size: 1.6rem; }
+
+    /* ===== 管理员面板 ===== */
+    #adminPanel.show {
+      display: flex !important;
+    }
+    #orderSuccess.show {
+      display: block !important;
+    }
+    #photoOverlay.show {
+      display: flex !important;
+    }
+    #orderFormArea.hidden {
+      display: none !important;
+    }
+
+    /* ===== 滚动条美化 ===== */
+    #adminOrderList::-webkit-scrollbar { width: 4px; }
+    #adminOrderList::-webkit-scrollbar-thumb { background: #ddd; border-radius: 4px; }
+    #adminOrderList::-webkit-scrollbar-track { background: transparent; }
   </style>
 </head>
 <body>
@@ -743,7 +768,8 @@
     </div>
   </section>
 
-  <!-- ===== Upload Section ===== -->
+  <!-- ===== 付款成功消息 ===== -->
+  <div id="orderFormArea">
   <section class="upload-section" id="generator">
     <div class="container">
       <div class="upload-grid">
@@ -775,22 +801,59 @@
         </button>
       </div>
 
-      <!-- ===== Email Input ===== -->
-      <div class="email-input-area">
-        <input type="email" id="orderEmail" placeholder="Enter your email to receive photos 📬" required>
-      </div>
+      <!-- ===== 付款后自动在页面显示结果（无需邮箱） ===== -->
 
       <button class="cta-button" id="generateBtn">
-        ✨ Generate My Baby
+        ✨ See Plans & Pricing
         <span class="sub">Starting at $9 · One-time payment</span>
       </button>
 
       <div class="trust">
         <div class="checks">
-          <span>✅ Instant delivery to email</span>
+          <span>✅ Instant results on screen</span>
           <span>🔒 No storage, privacy first</span>
           <span>💵 100% money-back guarantee</span>
         </div>
+      </div>
+    </div>
+  </section>
+
+      </div>
+    </div>
+  </section>
+  </div><!-- /orderFormArea -->
+
+  <!-- ===== 付款成功 ===== -->
+  <section class="upload-section" id="orderSuccess" style="display:none;">
+    <div class="container" style="text-align:center;padding:40px 0;">
+      <div id="generateStatus" style="padding:16px;font-size:0.95rem;color:#333;">
+        <div style="font-size:3rem;margin-bottom:12px;">⏳</div>
+        <p style="font-size:1.1rem;color:var(--text-light);">🤖 AI is generating your baby photos...</p>
+      </div>
+      <div id="resultDisplay" style="display:none;">
+        <div style="font-size:4rem;margin-bottom:12px;">🎉</div>
+        <h2 style="color:#2ECC71;">Meet Your Future Baby! 👶</h2>
+        <p style="font-size:1rem;color:var(--text-light);margin:8px 0 24px;">Two versions generated based on each parent's features. Right-click to save!</p>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:20px;max-width:700px;margin:0 auto;">
+          <div style="background:#fff;border-radius:16px;padding:16px;box-shadow:0 4px 20px rgba(0,0,0,0.08);">
+            <div style="font-size:0.9rem;color:#FF6B8A;font-weight:700;margin-bottom:8px;">👩 Mom's Version</div>
+            <img id="resultMomImg" src="" style="width:100%;border-radius:12px;border:2px solid #FFE0E6;" alt="Baby from Mom">
+            <button onclick="downloadImg('resultMomImg','baby-from-mom.png')" style="margin-top:10px;width:100%;padding:10px;border:2px solid #FF6B8A;border-radius:10px;background:white;color:#FF6B8A;font-weight:700;cursor:pointer;font-size:0.9rem;">⬇️ Download</button>
+          </div>
+          <div style="background:#fff;border-radius:16px;padding:16px;box-shadow:0 4px 20px rgba(0,0,0,0.08);">
+            <div style="font-size:0.9rem;color:#5D9CEC;font-weight:700;margin-bottom:8px;">👨 Dad's Version</div>
+            <img id="resultDadImg" src="" style="width:100%;border-radius:12px;border:2px solid #D6E6FF;" alt="Baby from Dad">
+            <button onclick="downloadImg('resultDadImg','baby-from-dad.png')" style="margin-top:10px;width:100%;padding:10px;border:2px solid #5D9CEC;border-radius:10px;background:white;color:#5D9CEC;font-weight:700;cursor:pointer;font-size:0.9rem;">⬇️ Download</button>
+          </div>
+        </div>
+        <div style="margin-top:24px;padding:16px;background:#FFF8F5;border-radius:12px;font-size:0.85rem;color:#888;">
+          💡 Tip: Share these with family and friends! Right-click to save each image.
+        </div>
+      </div>
+      <div id="generateError" style="display:none;margin-top:16px;padding:20px;background:#FFF0F0;border-radius:12px;">
+        <p style="color:#E74C3C;font-weight:700;">⚠️ Generation Failed</p>
+        <p id="errorMessage" style="color:#666;font-size:0.9rem;margin:8px 0;"></p>
+        <button onclick="retryGenerate()" style="padding:10px 24px;border:2px solid #E74C3C;border-radius:10px;background:white;color:#E74C3C;font-weight:700;cursor:pointer;">🔄 Retry</button>
       </div>
     </div>
   </section>
@@ -804,11 +867,11 @@
 
         <div class="sample-card">
           <div class="sample-images">
-            <div class="sample-img-box bg-mom"><img src="./images/mom-sample.jpg" alt="Mom" loading="lazy"><span class="badge badge-mom">Mom</span></div>
+            <div class="sample-img-box bg-mom"><span class="initials">S</span><span class="badge badge-mom">Mom</span></div>
             <div class="sample-arrow">→</div>
-            <div class="sample-img-box bg-dad"><img src="./images/dad-sample.jpg" alt="Dad" loading="lazy"><span class="badge badge-dad">Dad</span></div>
+            <div class="sample-img-box bg-dad"><span class="initials">M</span><span class="badge badge-dad">Dad</span></div>
             <div class="sample-arrow">→</div>
-            <div class="sample-result-box bg-baby-girl"><img src="./images/baby-girl1.jpg" alt="Baby Girl" loading="lazy"><span class="result-badge-overlay">👶 Girl</span></div>
+            <div class="sample-result-box bg-baby-girl"><img src="./images/baby-girl-result.jpg" alt="Baby Girl" loading="lazy"><span class="result-badge-overlay">👶 Girl</span></div>
           </div>
           <div class="couple-name">Sarah &amp; Mike</div>
           <div class="result-badge">"We cried! It looks just like us!" <span>★★★★★</span></div>
@@ -816,11 +879,11 @@
 
         <div class="sample-card">
           <div class="sample-images">
-            <div class="sample-img-box bg-mom"><img src="./images/mom-sample2.jpg" alt="Mom" loading="lazy"><span class="badge badge-mom">Mom</span></div>
+            <div class="sample-img-box bg-mom"><span class="initials">E</span><span class="badge badge-mom">Mom</span></div>
             <div class="sample-arrow">→</div>
-            <div class="sample-img-box bg-dad"><img src="./images/dad-sample2.jpg" alt="Dad" loading="lazy"><span class="badge badge-dad">Dad</span></div>
+            <div class="sample-img-box bg-dad"><span class="initials">D</span><span class="badge badge-dad">Dad</span></div>
             <div class="sample-arrow">→</div>
-            <div class="sample-result-box bg-baby-boy"><img src="./images/baby-boy1.jpg" alt="Baby Boy" loading="lazy"><span class="result-badge-overlay">👶 Boy</span></div>
+            <div class="sample-result-box bg-baby-boy"><img src="./images/baby-boy-result.jpg" alt="Baby Boy" loading="lazy"><span class="result-badge-overlay">👶 Boy</span></div>
           </div>
           <div class="couple-name">David &amp; Emma</div>
           <div class="result-badge">"The resemblance is uncanny!" <span>★★★★★</span></div>
@@ -828,11 +891,11 @@
 
         <div class="sample-card">
           <div class="sample-images">
-            <div class="sample-img-box bg-mom"><img src="./images/mom-sample.jpg" alt="Mom" loading="lazy"><span class="badge badge-mom">Mom</span></div>
+            <div class="sample-img-box bg-mom"><span class="initials">L</span><span class="badge badge-mom">Mom</span></div>
             <div class="sample-arrow">→</div>
-            <div class="sample-img-box bg-dad"><img src="./images/dad-sample2.jpg" alt="Dad" loading="lazy"><span class="badge badge-dad">Dad</span></div>
+            <div class="sample-img-box bg-dad"><span class="initials">T</span><span class="badge badge-dad">Dad</span></div>
             <div class="sample-arrow">→</div>
-            <div class="sample-result-box bg-baby-both"><img src="./images/baby-sample-3.jpg" alt="Baby" loading="lazy"><span class="result-badge-overlay">👶 Both</span></div>
+            <div class="sample-result-box bg-baby-both"><img src="./images/baby-both-result.jpg" alt="Baby" loading="lazy"><span class="result-badge-overlay">👶 Both</span></div>
           </div>
           <div class="couple-name">Tom &amp; Lisa</div>
           <div class="result-badge">"Both versions are so cute!" <span>★★★★★</span></div>
@@ -861,10 +924,10 @@
           <p style="font-size:0.9rem;color:var(--text-light);margin-top:4px;">Our AI blends facial features instantly</p>
         </div>
         <div class="step-card">
-          <span class="emoji">📬</span>
+          <span class="emoji">💻</span>
           <div class="num">3</div>
-          <h3>Receive & Share</h3>
-          <p style="font-size:0.9rem;color:var(--text-light);margin-top:4px;">Get HD photos in your email, share with family</p>
+          <h3>View & Download</h3>
+          <p style="font-size:0.9rem;color:var(--text-light);margin-top:4px;">HD photos appear instantly on screen — download & share!</p>
         </div>
       </div>
     </div>
@@ -904,7 +967,7 @@
   <section class="pricing" id="pricing">
     <div class="container">
       <h2>Choose Your Plan</h2>
-      <p class="subtitle">One-time payment, no subscription. Your photos delivered instantly.</p>
+      <p class="subtitle">One-time payment, no subscription. Photos generated in seconds.</p>
       <div class="pricing-grid">
         <div class="pricing-card">
           <h3>Basic</h3>
@@ -912,7 +975,7 @@
           <ul>
             <li>✅ 8 HD baby photos (4 boy + 4 girl)</li>
             <li>✅ Realistic AI generation</li>
-            <li>✅ Delivered via email</li>
+            <li>✅ Instant on-screen result</li>
             <li>✅ Money-back guarantee</li>
           </ul>
           <form action="https://www.paypal.com/cgi-bin/webscr" method="post" target="_self" class="paypal-form" data-plan="basic">
@@ -972,7 +1035,7 @@
             How long does it take?
             <span class="arrow">▼</span>
           </div>
-          <div class="faq-a">Most orders are delivered within 30 minutes! Premium orders are processed even faster. You'll receive an email with your photos once they're ready.</div>
+          <div class="faq-a">Most orders are generated within 30 seconds! Your baby photos will appear instantly on screen after payment. Just click save to download them.</div>
         </div>
         <div class="faq-item">
           <div class="faq-q" onclick="toggleFaq(this)">
@@ -993,25 +1056,59 @@
             Can I get a refund if I don't like it?
             <span class="arrow">▼</span>
           </div>
-          <div class="faq-a">Yes! We offer a 100% money-back guarantee. If you're not happy with the results for any reason, just email us within 7 days and we'll refund your purchase — no questions asked.</div>
+          <div class="faq-a">Yes! We offer a 100% money-back guarantee. If you're not happy with the results for any reason, contact us within 7 days and we'll refund your purchase — no questions asked.</div>
         </div>
       </div>
     </div>
   </section>
 
-  <!-- ===== Email Signup ===== -->
+  <!-- ===== Stay Connected ===== -->
   <section class="email-signup">
     <div class="container">
-      <h2>📬 Stay Updated</h2>
-      <p class="subtitle">Be the first to hear about new features, updates, and exclusive offers</p>
-      <form class="email-form" id="emailForm">
-        <input type="email" id="emailInput" placeholder="Enter your email address" required>
-        <button type="submit" class="email-btn">Notify Me 🚀</button>
-      </form>
-      <div class="email-success">✅ You're on the list! We'll keep you updated 🚀</div>
-      <p class="email-note">🔒 No spam. Unsubscribe anytime.</p>
+      <h2>🌟 Spread the Joy</h2>
+      <p class="subtitle">Share BabyLens AI with friends and family — let them meet their future baby too!</p>
+      <div style="display:flex;gap:12px;justify-content:center;flex-wrap:wrap;margin-top:20px;">
+        <a href="https://chipper-selkie-10710c.netlify.app" target="_blank" style="padding:12px 28px;background:var(--pink);color:white;border-radius:12px;text-decoration:none;font-weight:700;">🔗 Share Link</a>
+        <a href="mailto:?subject=Check out BabyLens AI&body=I found this amazing AI tool that shows what your future baby will look like! %0A%0Ahttps://chipper-selkie-10710c.netlify.app" style="padding:12px 28px;background:var(--coral);color:white;border-radius:12px;text-decoration:none;font-weight:700;">✉️ Tell a Friend</a>
+      </div>
     </div>
   </section>
+
+  <!-- ===== 管理员面板 ===== -->
+  <div id="adminToggle" style="position:fixed;bottom:16px;right:16px;z-index:999;width:40px;height:40px;background:var(--pink);color:white;border:none;border-radius:50%;cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:1.2rem;box-shadow:0 2px 12px rgba(0,0,0,0.2);opacity:0.6;" title="管理员入口">⚙️</div>
+
+  <div id="adminPanel" style="display:none;position:fixed;bottom:64px;right:16px;width:380px;max-height:70vh;background:white;border-radius:16px;box-shadow:0 8px 40px rgba(0,0,0,0.2);z-index:1000;overflow:hidden;flex-direction:column;">
+    <div style="background:linear-gradient(135deg,var(--pink),var(--coral));color:white;padding:14px 18px;display:flex;justify-content:space-between;align-items:center;">
+      <span style="font-weight:700;font-family:'Nunito',sans-serif;">⚙️ 订单管理</span>
+      <span id="orderCount" style="background:rgba(255,255,255,0.3);padding:2px 10px;border-radius:12px;font-size:0.8rem;">0</span>
+    </div>
+    <div id="adminOrderList" style="overflow-y:auto;flex:1;padding:12px;">
+      <div style="text-align:center;padding:30px 0;color:#B2BEC3;">暂无订单</div>
+    </div>
+  </div>
+
+  <!-- ===== 照片预览弹窗 ===== -->
+  <div id="photoOverlay" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,0.7);z-index:2000;align-items:center;justify-content:center;" onclick="if(event.target===this)closePhotoOverlay()">
+    <div style="background:white;border-radius:20px;padding:24px;max-width:500px;width:90%;max-height:90vh;overflow-y:auto;">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px;">
+        <span id="photoOverlayOrder" style="font-weight:600;font-size:1rem;"></span>
+        <button onclick="closePhotoOverlay()" style="background:none;border:none;font-size:1.4rem;cursor:pointer;color:#999;">✕</button>
+      </div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;">
+        <div style="text-align:center;">
+          <div style="font-size:0.8rem;color:var(--text-light);margin-bottom:6px;">👩 Mom Photo</div>
+          <img id="photoMom" src="" style="width:100%;border-radius:12px;border:2px solid #eee;">
+        </div>
+        <div style="text-align:center;">
+          <div style="font-size:0.8rem;color:var(--text-light);margin-bottom:6px;">👨 Dad Photo</div>
+          <img id="photoDad" src="" style="width:100%;border-radius:12px;border:2px solid #eee;">
+        </div>
+      </div>
+      <div style="margin-top:16px;padding:12px;background:#FFF8F5;border-radius:12px;text-align:center;font-size:0.85rem;color:#666;">
+        🤖 付款后自动生成宝宝照片，无需手动操作
+      </div>
+    </div>
+  </div>
 
   <!-- ===== Footer ===== -->
   <footer>
@@ -1027,7 +1124,37 @@
   </footer>
 
   <script>
-    // ===== Upload Preview =====
+    // ===== 全局状态 =====
+    let momPhotoData = null;
+    let dadPhotoData = null;
+
+    // ===== 压缩图片 =====
+    function compressImage(file, targetSize, cb) {
+      const reader = new FileReader();
+      reader.onload = function(e) {
+        const img = new Image();
+        img.onload = function() {
+          const canvas = document.createElement('canvas');
+          // 先 resize 到 targetSize 以内，保持比例
+          let w = img.width, h = img.height;
+          if (w > h && w > targetSize) { h = h * targetSize / w; w = targetSize; }
+          else if (h > targetSize) { w = w * targetSize / h; h = targetSize; }
+          // 然后 pad 成正方形（白底），Stability AI SDXL 需要 1024x1024
+          const size = Math.max(w, h, targetSize);
+          canvas.width = size; canvas.height = size;
+          const ctx = canvas.getContext('2d');
+          ctx.fillStyle = '#FFFFFF';
+          ctx.fillRect(0, 0, size, size);
+          const dx = (size - w) / 2, dy = (size - h) / 2;
+          ctx.drawImage(img, dx, dy, w, h);
+          cb(canvas.toDataURL('image/jpeg', 0.85));
+        };
+        img.src = e.target.result;
+      };
+      reader.readAsDataURL(file);
+    }
+
+    // ===== Upload Preview（带压缩） =====
     ['mom', 'dad'].forEach(id => {
       const input = document.getElementById(id + 'Input');
       const box = document.getElementById(id + 'Box');
@@ -1041,8 +1168,262 @@
             box.classList.add('has-image');
           };
           reader.readAsDataURL(file);
+          // 压缩保存
+          compressImage(file, 1024, function(data) {
+            if (id === 'mom') momPhotoData = data;
+            else dadPhotoData = data;
+          });
         }
       });
+    });
+
+    // ===== 订单管理 =====
+    function getOrders() {
+      return JSON.parse(localStorage.getItem('bl_orders') || '[]');
+    }
+    function saveOrders(orders) {
+      localStorage.setItem('bl_orders', JSON.stringify(orders));
+    }
+    function generateOrderId() {
+      return 'BL-' + Date.now().toString(36).toUpperCase() + '-' + Math.random().toString(36).substr(2,4).toUpperCase();
+    }
+    function getActiveGender() {
+      const active = document.querySelector('.gender-btn.active');
+      return active ? active.dataset.gender : 'both';
+    }
+
+    // ===== 检测付款成功回跳 =====
+    (function() {
+      const params = new URLSearchParams(window.location.search);
+      if (params.get('status') === 'success') {
+        // 把最新的 pending 订单标记为 paid
+        const orders = getOrders();
+        let found = false;
+        for (let i = orders.length - 1; i >= 0; i--) {
+          if (orders[i].status === 'pending') {
+            orders[i].status = 'paid';
+            orders[i].paidAt = new Date().toISOString();
+            found = true;
+            break;
+          }
+        }
+        if (found) {
+          saveOrders(orders);
+          document.getElementById('orderSuccess').classList.add('show');
+          document.getElementById('orderFormArea').classList.add('hidden');
+          // 清除 URL 参数
+          window.history.replaceState({}, '', window.location.pathname);
+        }
+        // 自动触发生成
+        if (found) {
+          autoGenerate();
+        }
+      }
+    })();
+
+    // ===== 下载图片 =====
+    function downloadImg(imgId, filename) {
+      const img = document.getElementById(imgId);
+      const link = document.createElement('a');
+      link.download = filename;
+      link.href = img.src;
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+    }
+
+    // ===== 自动调后端生成 + 页面显示 =====
+    async function autoGenerate() {
+      const orders = getOrders();
+      const paidOrder = orders.filter(o => o.status === 'paid').pop();
+      if (!paidOrder || paidOrder.generating) return;
+
+      paidOrder.generating = true;
+      saveOrders(orders);
+
+      document.getElementById('orderSuccess').style.display = 'block';
+      document.getElementById('orderFormArea').classList.add('hidden');
+
+      const statusEl = document.getElementById('generateStatus');
+      const resultEl = document.getElementById('resultDisplay');
+      const errorEl = document.getElementById('generateError');
+
+      try {
+        const res = await fetch('/.netlify/functions/generate', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            plan: paidOrder.plan,
+            gender: paidOrder.gender,
+            orderId: paidOrder.id,
+            momPhoto: paidOrder.momPhoto,
+            dadPhoto: paidOrder.dadPhoto,
+          }),
+        });
+
+        const data = await res.json();
+
+        if (data.success && data.images) {
+          // 显示图片
+          document.getElementById('resultMomImg').src = 'data:image/png;base64,' + data.images.babyFromMom;
+          document.getElementById('resultDadImg').src = 'data:image/png;base64,' + data.images.babyFromDad;
+          statusEl.style.display = 'none';
+          resultEl.style.display = 'block';
+
+          // 标记订单已发货
+          const updatedOrders = getOrders();
+          const target = updatedOrders.find(o => o.id === paidOrder.id);
+          if (target) {
+            target.status = 'delivered';
+            target.deliveredAt = new Date().toISOString();
+            delete target.generating;
+            saveOrders(updatedOrders);
+          }
+        } else {
+          throw new Error(data.message || 'Generation failed');
+        }
+      } catch (err) {
+        console.error('Auto-generate error:', err);
+        const updatedOrders = getOrders();
+        const target = updatedOrders.find(o => o.id === paidOrder.id);
+        if (target) delete target.generating;
+        saveOrders(updatedOrders);
+
+        statusEl.style.display = 'none';
+        errorEl.style.display = 'block';
+        document.getElementById('errorMessage').textContent = err.message;
+      }
+    }
+
+    function retryGenerate() {
+      document.getElementById('errorMessage').textContent = '';
+      document.getElementById('generateError').style.display = 'none';
+      document.getElementById('generateStatus').style.display = 'block';
+      document.getElementById('resultDisplay').style.display = 'none';
+      autoGenerate();
+    }
+
+    // ===== PayPal 点击时保存订单 =====
+    // ===== Generate 按钮 → 滚动到定价区 =====
+    document.getElementById('generateBtn').addEventListener('click', function() {
+      if (!momPhotoData || !dadPhotoData) {
+        alert('Please upload both Mom and Dad photos first!');
+        return;
+      }
+      document.getElementById('pricing').scrollIntoView({ behavior: 'smooth', block: 'start' });
+    });
+
+    // ===== PayPal 点击时保存订单 =====
+    document.querySelectorAll('.paypal-form').forEach(form => {
+      form.addEventListener('submit', function(e) {
+        if (!momPhotoData || !dadPhotoData) {
+          e.preventDefault();
+          alert('Please upload both Mom and Dad photos first!');
+          return;
+        }
+        const plan = this.dataset.plan;
+        const orderId = generateOrderId();
+        const gender = getActiveGender();
+        const orders = getOrders();
+        orders.push({
+          id: orderId,
+          plan: plan,
+          gender: gender,
+          momPhoto: momPhotoData,
+          dadPhoto: dadPhotoData,
+          createdAt: new Date().toISOString(),
+          status: 'pending'
+        });
+        saveOrders(orders);
+        this.querySelector('.order-id-input').value = orderId;
+      });
+    });
+
+    // ===== 管理员面板功能 =====
+    function renderAdmin() {
+      const orders = getOrders();
+      const list = document.getElementById('adminOrderList');
+      const count = document.getElementById('orderCount');
+      const pending = orders.filter(o => o.status === 'pending' || o.status === 'paid');
+      count.textContent = pending.length;
+      if (orders.length === 0) {
+        list.innerHTML = '<div style="text-align:center;padding:30px 0;color:#B2BEC3;">暂无订单</div>';
+        return;
+      }
+      let html = '';
+      orders.forEach((o, i) => {
+        const planName = o.plan === 'basic' ? 'Basic ($9)' : 'Premium ($17)';
+        const time = new Date(o.createdAt).toLocaleString('zh-CN', {hour12:false});
+        const paidTime = o.paidAt ? new Date(o.paidAt).toLocaleString('zh-CN', {hour12:false}) : '';
+        const statusMap = {pending:'⏳ 待付款', paid:'✅ 已付款-待处理', delivered:'📬 已发货'};
+        const statusColor = {pending:'#F39C12', paid:'#2ECC71', delivered:'#3498DB'};
+        html += `<div style="border:1px solid #eee;border-radius:12px;padding:12px;margin-bottom:10px;">
+          <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px;">
+            <span style="font-weight:700;font-size:0.85rem;color:${statusColor[o.status]};">${statusMap[o.status] || o.status}</span>
+            <span style="font-size:0.7rem;color:#999;">#${o.id}</span>
+          </div>
+          <div style="font-size:0.85rem;color:#555;line-height:1.8;">
+            📦 ${planName} · ${o.gender === 'both' ? '👶 男女' : o.gender === 'boy' ? '👦 男' : '👧 女'}<br>
+            🕐 ${time}<br>
+            ${o.paidAt ? '✅ 付款: ' + paidTime : ''}
+          </div>
+          <div style="display:flex;gap:6px;margin-top:8px;">
+            <button onclick="viewOrderPhotos(${i})" style="flex:1;padding:7px;border:1px solid #ddd;border-radius:8px;background:white;cursor:pointer;font-size:0.8rem;">📸 照片</button>
+            <button onclick="markDelivered(${i})" style="flex:1;padding:7px;border:1px solid #2ECC71;border-radius:8px;background:#E8F8F0;cursor:pointer;font-size:0.8rem;color:#27AE60;font-weight:600;">✅ 已发货</button>
+            <button onclick="deleteOrder(${i})" style="padding:7px 10px;border:1px solid #E74C3C;border-radius:8px;background:#FDEDEC;cursor:pointer;font-size:0.8rem;color:#E74C3C;">🗑️</button>
+          </div>
+        </div>`;
+      });
+      list.innerHTML = html;
+    }
+
+    function viewOrderPhotos(index) {
+      const orders = getOrders();
+      const o = orders[index];
+      document.getElementById('photoOverlayOrder').textContent = '📋 订单 #' + o.id;
+      document.getElementById('photoMom').src = o.momPhoto;
+      document.getElementById('photoDad').src = o.dadPhoto;
+      document.getElementById('photoOverlay').style.display = 'flex';
+    }
+
+    function closePhotoOverlay() {
+      document.getElementById('photoOverlay').style.display = 'none';
+    }
+
+    function markDelivered(index) {
+      if (!confirm('标记此订单为「已发货」？')) return;
+      const orders = getOrders();
+      orders[index].status = 'delivered';
+      orders[index].deliveredAt = new Date().toISOString();
+      saveOrders(orders);
+      renderAdmin();
+    }
+
+    function deleteOrder(index) {
+      if (!confirm('确认删除此订单？')) return;
+      const orders = getOrders();
+      orders.splice(index, 1);
+      saveOrders(orders);
+      renderAdmin();
+    }
+
+    // ===== 管理员入口点击 =====
+    let adminUnlocked = false;
+    document.getElementById('adminToggle').addEventListener('click', function() {
+      if (adminUnlocked) {
+        const panel = document.getElementById('adminPanel');
+        panel.style.display = panel.style.display === 'none' ? 'flex' : 'none';
+        if (panel.style.display === 'flex') renderAdmin();
+        return;
+      }
+      const pw = prompt('🔐 管理员密码:');
+      if (pw === 'babylens2024') {
+        adminUnlocked = true;
+        document.getElementById('adminPanel').style.display = 'flex';
+        renderAdmin();
+      } else if (pw !== null) {
+        alert('密码错误！');
+      }
     });
 
     // ===== Gender Select =====
@@ -1070,20 +1451,6 @@
       document.getElementById('pricing').scrollIntoView({ behavior: 'smooth' });
     });
 
-    // ===== Email Signup =====
-    document.getElementById('emailForm').addEventListener('submit', function(e) {
-      e.preventDefault();
-      const email = document.getElementById('emailInput').value.trim();
-      if (!email) return;
-      // Store in localStorage and show success
-      let subscribers = JSON.parse(localStorage.getItem('babylens_emails') || '[]');
-      if (!subscribers.includes(email)) {
-        subscribers.push(email);
-        localStorage.setItem('babylens_emails', JSON.stringify(subscribers));
-      }
-      document.getElementById('emailForm').classList.add('hidden');
-      document.querySelector('.email-success').classList.add('show');
-    });
   </script>
 
 </body>

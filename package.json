@@ -1,0 +1,10 @@
+{
+  "name": "babylens-ai",
+  "version": "1.0.0",
+  "description": "BabyLens AI - Backend functions",
+  "private": true,
+  "dependencies": {
+    "@netlify/blobs": "^8.0.0",
+    "resend": "^4.0.0"
+  }
+}

@@ -1,0 +1,8 @@
+{
+  "name": "babylens-functions",
+  "version": "1.0.0",
+  "description": "BabyLens AI Netlify Functions",
+  "dependencies": {
+    "resend": "^4.0.0"
+  }
+}
