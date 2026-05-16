@@ -1,7 +1,11 @@
 /**
  * BabyLens AI - 生图 API（Cloudflare Pages Function）
- * 
+ *
  * 接收父母照片，调 Stability AI img2img 生成宝宝照
+ * 支持两种模式：
+ *   1. 直接传 photos（前端上传后立即生成）
+ *   2. 传 orderId（付款回跳后从 D1 加载照片）
+ *
  * 访问路径: https://babylens.pages.dev/generate
  */
 
@@ -17,7 +21,6 @@ export async function onRequest(context) {
     'Content-Type': 'application/json',
   };
 
-  // OPTIONS 预检请求
   if (request.method === 'OPTIONS') {
     return new Response('', { status: 204, headers: corsHeaders });
   }
@@ -31,9 +34,29 @@ export async function onRequest(context) {
 
   try {
     const body = await request.json();
-    const { orderId, plan, gender, momPhoto, dadPhoto } = body;
+    let { orderId, plan, gender, momPhoto, dadPhoto, side } = body;
 
-    // 安全校验
+    // ─── 模式 2：只传 orderId，从 D1 加载照片 ────────────────────────
+    if (!momPhoto && !dadPhoto && orderId && env.DB) {
+      // 去掉后缀（-M/-D/-R）找主订单
+      const mainOrderId = orderId.replace(/-(M|D|R)$/, '');
+      const order = await env.DB.prepare(
+        `SELECT mom_photo, dad_photo FROM orders WHERE id = ?`
+      ).bind(mainOrderId).first();
+
+      if (order) {
+        momPhoto = order.mom_photo;
+        dadPhoto = order.dad_photo;
+        if (!gender) gender = 'both';
+      } else {
+        return new Response(JSON.stringify({
+          error: 'Order not found in database',
+          orderId: mainOrderId,
+        }), { status: 404, headers: corsHeaders });
+      }
+    }
+
+    // ─── 安全校验 ────────────────────────────────────────────────────
     if (!orderId || !orderId.startsWith('BL-')) {
       return new Response(JSON.stringify({ error: 'Invalid orderId' }), {
         status: 400,
@@ -49,11 +72,18 @@ export async function onRequest(context) {
 
     console.log(`[generate] Processing order ${orderId}, plan=${plan}, gender=${gender}`);
 
-    // 并行生成两张宝宝照（分别基于妈妈和爸爸的照片）
-    const [babyFromMom, babyFromDad] = await Promise.all([
-      generateBabyFromParent(momPhoto, gender || 'both', 'mom', STABILITY_API_KEY),
-      generateBabyFromParent(dadPhoto, gender || 'both', 'dad', STABILITY_API_KEY),
-    ]);
+    let babyFromMom, babyFromDad;
+
+    if (side === 'mom') {
+      babyFromMom = await generateBabyFromParent(momPhoto, gender || 'both', 'mom', STABILITY_API_KEY);
+    } else if (side === 'dad') {
+      babyFromDad = await generateBabyFromParent(dadPhoto, gender || 'both', 'dad', STABILITY_API_KEY);
+    } else {
+      [babyFromMom, babyFromDad] = await Promise.all([
+        generateBabyFromParent(momPhoto, gender || 'both', 'mom', STABILITY_API_KEY),
+        generateBabyFromParent(dadPhoto, gender || 'both', 'dad', STABILITY_API_KEY),
+      ]);
+    }
 
     console.log(`[generate] ✅ Order ${orderId} completed`);
     return new Response(
@@ -74,7 +104,7 @@ export async function onRequest(context) {
 }
 
 /**
- * 用 Stability AI img2img 基于父母照片生成宝宝照
+ * 用 Stability SDXL img2img 基于父母照片生成宝宝照
  */
 async function generateBabyFromParent(parentBase64, gender, label, apiKey) {
   const genderText =
@@ -82,9 +112,8 @@ async function generateBabyFromParent(parentBase64, gender, label, apiKey) {
     : gender === 'girl' ? 'baby girl'
     : 'newborn baby';
 
-  const prompt = `A photorealistic close-up portrait of a ${genderText}, around 3 months old, soft natural lighting, smooth baby skin, cute expression, high detail, professional DSLR photography, shallow depth of field, warm tones, adorable face`;
+  const prompt = `A photorealistic close-up portrait of a ${genderText}, around 3 months old, wearing a cute baby onesie, baby bodysuit, soft pastel color baby outfit, newborn baby clothes, soft natural lighting, smooth baby skin, cute expression, high detail, professional DSLR photography, shallow depth of field, warm tones, adorable face`;
 
-  // 提取纯 base64
   const rawBase64 = parentBase64.includes('base64,')
     ? parentBase64.split('base64,')[1]
     : parentBase64;
@@ -97,15 +126,17 @@ async function generateBabyFromParent(parentBase64, gender, label, apiKey) {
   const formData = new FormData();
   formData.append('init_image', new Blob([bytes], { type: 'image/jpeg' }), 'parent.jpg');
   formData.append('init_image_mode', 'IMAGE_STRENGTH');
-  formData.append('image_strength', '0.35');
+  formData.append('image_strength', '0.02');
   formData.append('text_prompts[0][text]', prompt);
   formData.append('text_prompts[0][weight]', '1');
+  formData.append('text_prompts[1][text]', 'adult clothes, adult clothing, shirt, jacket, dress, suit, tie, collar, adult body, grown up');
+  formData.append('text_prompts[1][weight]', '-2');
   formData.append('cfg_scale', '7');
   formData.append('samples', '1');
-  formData.append('steps', '30');
+  formData.append('steps', '10');
   formData.append('style_preset', 'photographic');
 
-  console.log(`[generate] Calling Stability img2img (${label})...`);
+  console.log(`[generate] Calling Stability SDXL img2img (${label})...`);
   const resp = await fetch(
     'https://api.stability.ai/v1/generation/stable-diffusion-xl-1024-v1-0/image-to-image',
     {
@@ -120,11 +151,11 @@ async function generateBabyFromParent(parentBase64, gender, label, apiKey) {
 
   if (!resp.ok) {
     const errText = await resp.text();
-    throw new Error(`Stability img2img (${label}) failed: ${resp.status} - ${errText}`);
+    throw new Error(`Stability SDXL img2img (${label}) failed: ${resp.status} - ${errText}`);
   }
 
   const result = await resp.json();
   const base64 = result.artifacts?.[0]?.base64;
-  if (!base64) throw new Error(`Stability img2img (${label}) returned no image`);
+  if (!base64) throw new Error(`Stability SDXL img2img (${label}) returned no image`);
   return base64;
 }

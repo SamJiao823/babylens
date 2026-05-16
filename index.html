@@ -177,6 +177,87 @@
     .upload-box.has-image .icon,
     .upload-box.has-image .label,
     .upload-box.has-image .hint { display: none; }
+    .upload-box.has-image::after {
+      content: '✅';
+      position: absolute;
+      top: 8px; right: 8px;
+      width: 32px; height: 32px;
+      background: #2ECC71;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1rem;
+      box-shadow: 0 2px 8px rgba(46,204,113,0.4);
+      animation: popIn 0.3s ease;
+    }
+
+    /* ===== Upload Status Bar ===== */
+    .upload-status {
+      max-width: 640px;
+      margin: -8px auto 20px;
+      padding: 12px 16px;
+      border-radius: 12px;
+      background: #FFF8F5;
+      border: 1px solid #F5E6E0;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-size: 0.9rem;
+      color: #636E72;
+      transition: all 0.3s ease;
+    }
+    .upload-status .status-icon { font-size: 1.2rem; }
+    .upload-status.ready {
+      background: #E8F8F0;
+      border-color: #A8E6C1;
+      color: #27AE60;
+    }
+    .upload-status.ready .status-icon { animation: none; }
+    .upload-status.error {
+      background: #FFF0F0;
+      border-color: #FFC8C8;
+      color: #E74C3C;
+    }
+    .upload-status .pulse-dot {
+      width: 8px; height: 8px;
+      border-radius: 50%;
+      background: #FF6B6B;
+      animation: pulse 1.5s ease-in-out infinite;
+      flex-shrink: 0;
+    }
+    .upload-status.ready .pulse-dot { display: none; }
+
+    /* ===== Toast 通知 ===== */
+    .toast-notification {
+      position: fixed;
+      top: 24px; left: 50%;
+      transform: translateX(-50%) translateY(-100px);
+      z-index: 9999;
+      padding: 16px 28px;
+      border-radius: 16px;
+      background: white;
+      box-shadow: 0 8px 32px rgba(0,0,0,0.15);
+      border: 1px solid #F0E0E0;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      font-size: 0.95rem;
+      font-weight: 600;
+      color: #E74C3C;
+      transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+      pointer-events: none;
+    }
+    .toast-notification.show {
+      transform: translateX(-50%) translateY(0);
+      pointer-events: auto;
+    }
+    .toast-notification .toast-icon { font-size: 1.5rem; }
+
+    @keyframes pulse {
+      0%, 100% { opacity: 1; transform: scale(1); }
+      50% { opacity: 0.5; transform: scale(0.8); }
+    }
 
     /* ===== Gender Select ===== */
     .gender-select {
@@ -203,13 +284,14 @@
     }
     .gender-btn .emoji { font-size: 1.3rem; margin-right: 4px; }
 
-    /* ===== CTA Button ===== */
-    .cta-button {
+    /* ===== CTA Button (Primary) ===== */
+    .btn-primary {
       display: block;
-      width: 100%; max-width: 400px;
-      margin: 0 auto;
+      width: 100%;
+      max-width: 480px;
+      margin: 0 auto 24px;
       padding: 18px 32px;
-      background: linear-gradient(135deg, var(--pink) 0%, var(--coral) 100%);
+      background: linear-gradient(135deg, #FF8C9E 0%, #FF6B6B 100%);
       color: white;
       border: none;
       border-radius: 50px;
@@ -217,23 +299,32 @@
       font-weight: 700;
       font-family: 'Nunito', sans-serif;
       cursor: pointer;
-      transition: all 0.3s;
-      box-shadow: var(--shadow);
+      transition: all 0.3s ease;
+      box-shadow: 0 4px 20px rgba(255, 107, 107, 0.3);
       text-align: center;
     }
-    .cta-button:hover {
+    .btn-primary:hover {
       transform: translateY(-2px);
-      box-shadow: var(--shadow-hover);
+      box-shadow: 0 8px 32px rgba(255, 107, 107, 0.4);
     }
-    .cta-button:disabled {
-      opacity: 0.5; cursor: not-allowed; transform: none;
+    .btn-primary:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+      transform: none;
     }
-    .cta-button .sub {
+    .btn-primary .sub {
       display: block;
-      font-size: 0.8rem;
+      font-size: 0.75rem;
       font-weight: 400;
       opacity: 0.85;
       margin-top: 2px;
+    }
+    .btn-primary.ready {
+      background: linear-gradient(135deg, #2ECC71, #27AE60);
+      box-shadow: 0 4px 20px rgba(46, 204, 113, 0.3);
+    }
+    .btn-primary.ready:hover {
+      box-shadow: 0 8px 32px rgba(46, 204, 113, 0.4);
     }
 
     /* ===== Trust Badges ===== */
@@ -441,13 +532,10 @@
     }
     .pricing-grid {
       display: grid;
-      grid-template-columns: 1fr 1fr;
+      grid-template-columns: 1fr;
       gap: 24px;
-      max-width: 640px;
+      max-width: 480px;
       margin: 32px auto 0;
-    }
-    @media (max-width: 560px) {
-      .pricing-grid { grid-template-columns: 1fr; }
     }
     .pricing-card {
       background: var(--cream);
@@ -483,12 +571,6 @@
       color: var(--pink);
     }
     .pricing-card .price span { font-size: 1rem; color: var(--text-light); font-weight: 400; }
-    .pricing-card .old-price {
-      text-decoration: line-through;
-      color: var(--text-light);
-      font-size: 1.1rem;
-      margin-left: 8px;
-    }
     .pricing-card ul {
       list-style: none;
       text-align: left;
@@ -499,29 +581,27 @@
       font-size: 0.9rem;
       display: flex; align-items: center; gap: 8px;
     }
-    .pricing-card .buy-btn {
+
+    /* ===== PayPal Button ===== */
+    .paypal-btn {
       display: block;
       width: 100%;
       padding: 14px;
+      background: linear-gradient(135deg, #0070BA, #1546A0);
+      color: white;
       border: none;
       border-radius: 50px;
-      font-size: 1rem;
+      font-size: 1.05rem;
       font-weight: 700;
-      font-family: 'Nunito', sans-serif;
       cursor: pointer;
-      transition: all 0.3s;
-      text-decoration: none;
+      font-family: 'Nunito', sans-serif;
+      box-shadow: 0 4px 12px rgba(0,112,186,0.3);
+      transition: transform 0.15s, box-shadow 0.15s;
     }
-    .pricing-card .buy-btn.primary {
-      background: linear-gradient(135deg, var(--pink) 0%, var(--coral) 100%);
-      color: white;
+    .paypal-btn:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 6px 20px rgba(0,112,186,0.4);
     }
-    .pricing-card .buy-btn.secondary {
-      background: var(--white);
-      color: var(--pink);
-      border: 2px solid var(--pink);
-    }
-    .pricing-card .buy-btn:hover { transform: translateY(-2px); box-shadow: var(--shadow-hover); }
 
     /* ===== Section: FAQ ===== */
     .faq {
@@ -576,89 +656,32 @@
       opacity: 0.7;
     }
 
-    /* ===== Email Signup ===== */
-    .email-signup {
-      padding: 60px 0;
-      background: linear-gradient(135deg, var(--pink-light) 0%, #FFF8F5 100%);
-      text-align: center;
-    }
-    .email-form {
+    /* ===== Share Buttons (Footer) ===== */
+    .share-buttons {
       display: flex;
+      justify-content: center;
       gap: 12px;
-      max-width: 480px;
-      margin: 0 auto;
+      margin-top: 16px;
+      flex-wrap: wrap;
     }
-    @media (max-width: 520px) {
-      .email-form { flex-direction: column; }
-    }
-    .email-form input[type="email"] {
-      flex: 1;
-      padding: 14px 18px;
-      border: 2px solid #E8D0D0;
+    .share-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 8px 16px;
       border-radius: 50px;
-      font-size: 1rem;
-      font-family: 'Inter', sans-serif;
-      outline: none;
-      transition: border-color 0.3s;
-    }
-    .email-form input[type="email"]:focus {
-      border-color: var(--pink);
-    }
-    .email-btn {
-      padding: 14px 28px;
-      background: linear-gradient(135deg, var(--pink) 0%, var(--coral) 100%);
-      color: white;
-      border: none;
-      border-radius: 50px;
-      font-size: 1rem;
-      font-weight: 700;
-      font-family: 'Nunito', sans-serif;
-      cursor: pointer;
-      transition: all 0.3s;
-      white-space: nowrap;
-    }
-    .email-btn:hover {
-      transform: translateY(-2px);
-      box-shadow: var(--shadow-hover);
-    }
-    .email-note {
-      font-size: 0.8rem;
-      color: var(--text-light);
-      margin-top: 12px;
-    }
-    .email-success {
-      display: none;
-      color: #2ECC71;
+      font-size: 0.85rem;
       font-weight: 600;
-      font-size: 1.1rem;
-      padding: 20px;
-    }
-    .email-success.show { display: block; }
-    .email-form.hidden { display: none; }
-
-    /* ===== Order Email Input ===== */
-    .email-input-area {
-      max-width: 400px;
-      margin: 0 auto 20px;
-    }
-    .email-input-area input[type="email"] {
-      width: 100%;
-      padding: 16px 20px;
-      border: 2px solid #E8D0D0;
-      border-radius: 50px;
-      font-size: 1rem;
-      font-family: 'Inter', sans-serif;
-      outline: none;
-      transition: all 0.3s;
-      text-align: center;
+      text-decoration: none;
+      transition: all 0.2s;
+      border: 1px solid #E8D0D0;
       background: var(--white);
+      color: var(--text);
     }
-    .email-input-area input[type="email"]:focus {
+    .share-btn:hover {
       border-color: var(--pink);
-      box-shadow: var(--shadow);
-    }
-    .email-input-area input[type="email"]::placeholder {
-      color: #B2BEC3;
+      background: var(--pink-light);
+      transform: translateY(-1px);
     }
 
     /* ===== Processing Overlay ===== */
@@ -691,60 +714,50 @@
     .processing-card h3 { font-size: 1.3rem; margin-bottom: 8px; }
     .processing-card p { color: var(--text-light); font-size: 0.9rem; }
 
-    /* ===== Share Buttons ===== */
-    .share-buttons {
-      display: flex;
-      justify-content: center;
-      gap: 12px;
-      margin-top: 16px;
-      flex-wrap: wrap;
+    /* ===== Result Image Cards (after generation) ===== */
+    .result-img-card {
+      background: #fff;
+      border-radius: 16px;
+      padding: 16px;
+      box-shadow: 0 4px 20px rgba(0,0,0,0.08);
     }
-    .share-btn {
-      display: inline-flex;
-      align-items: center;
-      gap: 6px;
-      padding: 8px 16px;
-      border-radius: 50px;
-      font-size: 0.85rem;
-      font-weight: 600;
-      text-decoration: none;
+    .result-img-card .label {
+      font-size: 0.9rem;
+      font-weight: 700;
+      margin-bottom: 8px;
+    }
+    .result-img-card .label.mom-label { color: #FF6B8A; }
+    .result-img-card .label.dad-label { color: #5D9CEC; }
+    .result-img-card img {
+      width: 100%;
+      border-radius: 12px;
+      display: block;
+    }
+    .btn-download {
+      width: 100%;
+      padding: 12px;
+      border: 2px solid #E8D0D0;
+      border-radius: 12px;
+      background: white;
+      font-weight: 700;
+      cursor: pointer;
+      font-size: 0.95rem;
+      font-family: 'Nunito', sans-serif;
       transition: all 0.2s;
-      border: 1px solid #E8D0D0;
-      background: var(--white);
-      color: var(--text);
     }
-    .share-btn:hover {
+    .btn-download:hover {
       border-color: var(--pink);
       background: var(--pink-light);
       transform: translateY(-1px);
     }
+    .btn-download.mom { color: #FF6B8A; border-color: #FF6B8A; }
+    .btn-download.mom:hover { background: #FFF0F2; }
+    .btn-download.dad { color: #5D9CEC; border-color: #5D9CEC; }
+    .btn-download.dad:hover { background: #F0F6FF; }
 
-    /* ===== Section Divider ===== */
-    .section-divider { text-align: center; padding: 4px 0; }
-    .section-divider .emoji { font-size: 1.6rem; }
-
-    /* ===== 管理员面板 ===== */
-    #adminPanel.show {
-      display: flex !important;
-    }
-    #orderSuccess.show {
-      display: block !important;
-    }
-    #photoOverlay.show {
-      display: flex !important;
-    }
-    #orderFormArea.hidden {
-      display: none !important;
-    }
-
-    /* ===== 滚动条美化 ===== */
-    #adminOrderList::-webkit-scrollbar { width: 4px; }
-    #adminOrderList::-webkit-scrollbar-thumb { background: #ddd; border-radius: 4px; }
-
-    /* ===== 动画 ===== */
+    /* ===== Animated elements ===== */
     @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
     @keyframes popIn { from { opacity: 0; transform: scale(0.7); } to { opacity: 1; transform: scale(1); } }
-    #adminOrderList::-webkit-scrollbar-track { background: transparent; }
   </style>
 </head>
 <body>
@@ -772,8 +785,7 @@
     </div>
   </section>
 
-  <!-- ===== 付款成功消息 ===== -->
-  <div id="orderFormArea">
+  <!-- ===== Generator / Upload Section ===== -->
   <section class="upload-section" id="generator">
     <div class="container">
       <div class="upload-grid">
@@ -805,55 +817,63 @@
         </button>
       </div>
 
-      <!-- ===== 付款后自动在页面显示结果（无需邮箱） ===== -->
+      <div class="upload-status" id="uploadStatus">
+        <span class="pulse-dot"></span>
+        <span class="status-text">Upload both photos above, then click Generate</span>
+      </div>
 
-      <button class="cta-button" id="generateBtn">
-        ✨ See Plans & Pricing
-        <span class="sub">Starting at $9.99 · One-time payment</span>
+      <button class="btn-primary" id="generateBtn">
+        💎 Generate Your Baby Photos
+        <span class="sub">$9.99 one-time · No subscription · Instant result</span>
       </button>
 
       <div class="trust">
         <div class="checks">
           <span>✅ Instant results on screen</span>
           <span>🔒 No storage, privacy first</span>
-          <span>💵 100% money-back guarantee</span>
+          <span>💵 One-time payment, no subscription</span>
         </div>
       </div>
     </div>
   </section>
 
-      </div>
-    </div>
-  </section>
-  </div><!-- /orderFormArea -->
-
-  <!-- ===== 付款成功 ===== -->
+  <!-- ===== Order Success / Result Section ===== -->
   <section class="upload-section" id="orderSuccess" style="display:none;">
     <div class="container" style="text-align:center;padding:40px 0;">
-      <div id="generateStatus" style="padding:16px;font-size:0.95rem;color:#333;">
-        <div style="font-size:3rem;margin-bottom:12px;">⏳</div>
-        <p style="font-size:1.1rem;color:var(--text-light);">🤖 AI is generating your baby photos...</p>
+      <!-- Progress / Generating -->
+      <div id="generateStatus" style="padding:24px 16px;font-size:0.95rem;color:#333;background:#FFF8F5;border:2px solid #FFD6DC;border-radius:16px;">
+        <div style="font-size:2.5rem;margin-bottom:8px;">🧬</div>
+        <p style="font-size:1.2rem;color:#333;font-weight:700;">🤖 AI is creating your baby photos</p>
+        <div style="max-width:320px;margin:16px auto 8px;background:#f0e8e8;border-radius:20px;overflow:hidden;height:12px;box-shadow:inset 0 2px 4px rgba(0,0,0,0.08);">
+          <div id="progressBar" style="width:0%;height:100%;background:linear-gradient(90deg,#FF6B8A,#5D9CEC);border-radius:20px;transition:width 1.5s ease;box-shadow:0 0 8px rgba(255,107,138,0.4);"></div>
+        </div>
+        <p id="progressText" style="font-size:1rem;color:#666;font-weight:500;">🎨 Analyzing parent photos...</p>
+        <p style="font-size:0.8rem;color:#aaa;margin-top:8px;">⏱ Taking about 15-20 seconds</p>
       </div>
+
+      <!-- Result with Images & Download -->
       <div id="resultDisplay" style="display:none;">
         <div style="font-size:4rem;margin-bottom:12px;">🎉</div>
         <h2 style="color:#2ECC71;">Meet Your Future Baby! 👶</h2>
-        <p style="font-size:1rem;color:var(--text-light);margin:8px 0 24px;">Two versions generated based on each parent's features. Right-click to save!</p>
-        <div style="display:grid;grid-template-columns:1fr 1fr;gap:20px;max-width:700px;margin:0 auto;">
-          <div style="background:#fff;border-radius:16px;padding:16px;box-shadow:0 4px 20px rgba(0,0,0,0.08);">
-            <div style="font-size:0.9rem;color:#FF6B8A;font-weight:700;margin-bottom:8px;">👩 Mom's Version</div>
-            <img id="resultMomImg" src="" style="width:100%;border-radius:12px;border:2px solid #FFE0E6;" alt="Baby from Mom">
-            <button onclick="downloadImg('resultMomImg','baby-from-mom.png')" style="margin-top:10px;width:100%;padding:10px;border:2px solid #FF6B8A;border-radius:10px;background:white;color:#FF6B8A;font-weight:700;cursor:pointer;font-size:0.9rem;">⬇️ Download</button>
+        <p id="resultSubText" style="font-size:1rem;color:var(--text-light);margin:8px 0 24px;">Two versions generated based on each parent's features!</p>
+
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:20px;max-width:700px;margin:0 auto 24px;">
+          <div class="result-img-card">
+            <div class="label mom-label">👩 Mom's Version</div>
+            <img id="resultMomImg" src="" style="width:100%;border-radius:12px;display:block;" alt="Baby from Mom">
+            <button class="btn-download mom" onclick="downloadImg('resultMomImg','baby-from-mom.png')" style="margin-top:12px;">⬇️ Download Mom Version</button>
           </div>
-          <div style="background:#fff;border-radius:16px;padding:16px;box-shadow:0 4px 20px rgba(0,0,0,0.08);">
-            <div style="font-size:0.9rem;color:#5D9CEC;font-weight:700;margin-bottom:8px;">👨 Dad's Version</div>
-            <img id="resultDadImg" src="" style="width:100%;border-radius:12px;border:2px solid #D6E6FF;" alt="Baby from Dad">
-            <button onclick="downloadImg('resultDadImg','baby-from-dad.png')" style="margin-top:10px;width:100%;padding:10px;border:2px solid #5D9CEC;border-radius:10px;background:white;color:#5D9CEC;font-weight:700;cursor:pointer;font-size:0.9rem;">⬇️ Download</button>
+          <div class="result-img-card">
+            <div class="label dad-label">👨 Dad's Version</div>
+            <img id="resultDadImg" src="" style="width:100%;border-radius:12px;display:block;" alt="Baby from Dad">
+            <button class="btn-download dad" onclick="downloadImg('resultDadImg','baby-from-dad.png')" style="margin-top:12px;">⬇️ Download Dad Version</button>
           </div>
         </div>
-        <div style="margin-top:24px;padding:16px;background:#FFF8F5;border-radius:12px;font-size:0.85rem;color:#888;">
-          💡 Tip: Share these with family and friends! Right-click to save each image.
-        </div>
+
+        <p style="color:#2ECC71;font-weight:600;font-size:0.95rem;">✅ Photos are yours to download & share! 💕</p>
       </div>
+
+      <!-- Error -->
       <div id="generateError" style="display:none;margin-top:16px;padding:20px;background:#FFF0F0;border-radius:12px;">
         <p style="color:#E74C3C;font-weight:700;">⚠️ Generation Failed</p>
         <p id="errorMessage" style="color:#666;font-size:0.9rem;margin:8px 0;"></p>
@@ -970,51 +990,22 @@
   <!-- ===== Pricing ===== -->
   <section class="pricing" id="pricing">
     <div class="container">
-      <h2>Choose Your Plan</h2>
+      <h2>One Price. All Features.</h2>
       <p class="subtitle">One-time payment, no subscription. Photos generated in seconds.</p>
       <div class="pricing-grid">
-        <div class="pricing-card">
+        <div class="pricing-card featured">
+          <div class="popular-badge">🌟 Best Value</div>
           <h3>Basic</h3>
           <div class="price">$9.99 <span>/ one-time</span></div>
           <ul>
             <li>✅ 8 HD baby photos (4 boy + 4 girl)</li>
-            <li>✅ Realistic AI generation</li>
+            <li>✅ Realistic AI generation (SDXL)</li>
             <li>✅ Instant on-screen result</li>
+            <li>✅ High resolution download</li>
             <li>✅ Money-back guarantee</li>
           </ul>
-          <form action="https://www.paypal.com/cgi-bin/webscr" method="post" target="_self" class="paypal-form" data-plan="basic">
-            <input type="hidden" name="cmd" value="_xclick">
-            <input type="hidden" name="business" value="4886458@qq.com">
-            <input type="hidden" name="item_name" value="BabyLens AI Basic">
-            <input type="hidden" name="amount" value="9.99">
-            <input type="hidden" name="currency_code" value="USD">
-            <input type="hidden" name="return" value="https://babylens.pages.dev?status=success">
-            <input type="hidden" name="cancel_return" value="https://babylens.pages.dev?status=cancel">
-            <input type="hidden" name="custom" class="order-id-input" value="">
-            <button type="submit" class="buy-btn secondary">Get Basic</button>
-          </form>
-        </div>
-        <div class="pricing-card featured">
-          <div class="popular-badge">🌟 Most Popular</div>
-          <h3>Premium</h3>
-          <div class="price">$17.99 <span class="old-price">$27</span></div>
-          <ul>
-            <li>✅ 32 photos across all life stages</li>
-            <li>✅ Baby · Teen · Adult · Elderly</li>
-            <li>✅ Higher resolution</li>
-            <li>✅ Money-back guarantee</li>
-          </ul>
-          <form action="https://www.paypal.com/cgi-bin/webscr" method="post" target="_self" class="paypal-form" data-plan="premium">
-            <input type="hidden" name="cmd" value="_xclick">
-            <input type="hidden" name="business" value="4886458@qq.com">
-            <input type="hidden" name="item_name" value="BabyLens AI Premium">
-            <input type="hidden" name="amount" value="17.99">
-            <input type="hidden" name="currency_code" value="USD">
-            <input type="hidden" name="return" value="https://babylens.pages.dev?status=success">
-            <input type="hidden" name="cancel_return" value="https://babylens.pages.dev?status=cancel">
-            <input type="hidden" name="custom" class="order-id-input" value="">
-            <button type="submit" class="buy-btn primary">Get Premium</button>
-          </form>
+          <button onclick="paypalPay('basic')" id="paypal-btn-basic" class="paypal-btn" style="width:100%;">🅿️ Pay with PayPal — $9.99</button>
+          <button onclick="sandboxPay('basic')" id="sandbox-btn-basic" class="sandbox-btn" style="display:none;margin-top:8px;width:100%;padding:10px;border:2px dashed #6C5CE7;border-radius:12px;background:#F8F6FF;color:#6C5CE7;cursor:pointer;font-size:0.95rem;font-weight:600;">🧪 Sandbox Test — Pay $9.99 (test card)</button>
         </div>
       </div>
     </div>
@@ -1037,7 +1028,7 @@
             How long does it take?
             <span class="arrow">▼</span>
           </div>
-          <div class="faq-a">Most orders are generated within 30 seconds! Your baby photos will appear instantly on screen after payment. Just click save to download them.</div>
+          <div class="faq-a">Most orders are generated within 20 seconds! Your baby photos will appear instantly on screen after payment. Just click save to download them.</div>
         </div>
         <div class="faq-item">
           <div class="faq-q" onclick="toggleFaq(this)">
@@ -1064,19 +1055,7 @@
     </div>
   </section>
 
-  <!-- ===== Stay Connected ===== -->
-  <section class="email-signup">
-    <div class="container">
-      <h2>🌟 Spread the Joy</h2>
-      <p class="subtitle">Share BabyLens AI with friends and family — let them meet their future baby too!</p>
-      <div style="display:flex;gap:12px;justify-content:center;flex-wrap:wrap;margin-top:20px;">
-        <a href="https://babylens.pages.dev" target="_blank" style="padding:12px 28px;background:var(--pink);color:white;border-radius:12px;text-decoration:none;font-weight:700;">🔗 Share Link</a>
-        <a href="mailto:?subject=Check out BabyLens AI&body=I found this amazing AI tool that shows what your future baby will look like! %0A%0Ahttps://babylens.pages.dev" style="padding:12px 28px;background:var(--coral);color:white;border-radius:12px;text-decoration:none;font-weight:700;">✉️ Tell a Friend</a>
-      </div>
-    </div>
-  </section>
-
-  <!-- ===== 管理员面板 ===== -->
+  <!-- ===== Admin Panel ===== -->
   <div id="adminToggle" style="position:fixed;bottom:16px;right:16px;z-index:999;width:40px;height:40px;background:var(--pink);color:white;border:none;border-radius:50%;cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:1.2rem;box-shadow:0 2px 12px rgba(0,0,0,0.2);opacity:0.6;" title="管理员入口">⚙️</div>
 
   <div id="adminPanel" style="display:none;position:fixed;bottom:64px;right:16px;width:380px;max-height:70vh;background:white;border-radius:16px;box-shadow:0 8px 40px rgba(0,0,0,0.2);z-index:1000;overflow:hidden;flex-direction:column;">
@@ -1084,12 +1063,16 @@
       <span style="font-weight:700;font-family:'Nunito',sans-serif;">⚙️ 订单管理</span>
       <span id="orderCount" style="background:rgba(255,255,255,0.3);padding:2px 10px;border-radius:12px;font-size:0.8rem;">0</span>
     </div>
+    <div style="padding:10px 12px;display:flex;gap:8px;flex-wrap:wrap;border-bottom:1px solid #f0f0f0;">
+      <button onclick="toggleSandbox()" id="sandboxToggle" style="flex:1;padding:8px;border:none;border-radius:8px;background:#636E72;color:white;cursor:pointer;font-weight:600;font-size:0.75rem;">🔬 Sandbox: OFF</button>
+      <button onclick="testPayment('basic')" style="flex:1;padding:8px;border:none;border-radius:8px;background:linear-gradient(135deg,#6C5CE7,#a29bfe);color:white;cursor:pointer;font-weight:600;font-size:0.75rem;">🧪 Quick Test ($9.99)</button>
+    </div>
     <div id="adminOrderList" style="overflow-y:auto;flex:1;padding:12px;">
       <div style="text-align:center;padding:30px 0;color:#B2BEC3;">暂无订单</div>
     </div>
   </div>
 
-  <!-- ===== 照片预览弹窗 ===== -->
+  <!-- ===== Photo Preview Overlay (Admin) ===== -->
   <div id="photoOverlay" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,0.7);z-index:2000;align-items:center;justify-content:center;" onclick="if(event.target===this)closePhotoOverlay()">
     <div style="background:white;border-radius:20px;padding:24px;max-width:500px;width:90%;max-height:90vh;overflow-y:auto;">
       <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px;">
@@ -1137,18 +1120,14 @@
         const img = new Image();
         img.onload = function() {
           const canvas = document.createElement('canvas');
-          // 先 resize 到 targetSize 以内，保持比例
-          let w = img.width, h = img.height;
-          if (w > h && w > targetSize) { h = h * targetSize / w; w = targetSize; }
-          else if (h > targetSize) { w = w * targetSize / h; h = targetSize; }
-          // 然后 pad 成正方形（白底），Stability AI SDXL 需要 1024x1024
-          const size = Math.max(w, h, targetSize);
-          canvas.width = size; canvas.height = size;
+          canvas.width = targetSize;
+          canvas.height = targetSize;
           const ctx = canvas.getContext('2d');
-          ctx.fillStyle = '#FFFFFF';
-          ctx.fillRect(0, 0, size, size);
-          const dx = (size - w) / 2, dy = (size - h) / 2;
-          ctx.drawImage(img, dx, dy, w, h);
+          // 中心裁切：取原图最短边作为裁切边长，然后缩放到 targetSize
+          const minSide = Math.min(img.width, img.height);
+          const sx = (img.width - minSide) / 2;
+          const sy = (img.height - minSide) / 2;
+          ctx.drawImage(img, sx, sy, minSide, minSide, 0, 0, targetSize, targetSize);
           cb(canvas.toDataURL('image/jpeg', 0.85));
         };
         img.src = e.target.result;
@@ -1156,19 +1135,104 @@
       reader.readAsDataURL(file);
     }
 
-    // ===== Upload Preview（带压缩） =====
-    // ===== 上传时更新按钮状态 =====
-    function updateBtnState() {
+    // ===== 照片质量检测 =====
+    function checkPhotoQuality(file, cb) {
+      const reader = new FileReader();
+      reader.onload = function(e) {
+        const img = new Image();
+        img.onload = function() {
+          const canvas = document.createElement('canvas');
+          canvas.width = img.width; canvas.height = img.height;
+          const ctx = canvas.getContext('2d');
+          ctx.drawImage(img, 0, 0);
+          const imageData = ctx.getImageData(0, 0, img.width, img.height);
+          const data = imageData.data;
+          let sum = 0, count = 0;
+          for (let y = 0; y < img.height - 1; y += 2) {
+            for (let x = 0; x < img.width - 1; x += 2) {
+              const idx = (y * img.width + x) * 4;
+              const dx = Math.abs(data[idx] - data[idx + 4]);
+              const dy = Math.abs(data[idx] - data[idx + img.width * 4]);
+              sum += dx + dy;
+              count++;
+            }
+          }
+          const score = sum / count;
+          cb(score > 13);
+        };
+        img.src = e.target.result;
+      };
+      reader.readAsDataURL(file);
+    }
+
+    // ===== Toast 通知 =====
+    function showToast(msg, icon, duration) {
+      const existing = document.querySelector('.toast-notification');
+      if (existing) existing.remove();
+      const toast = document.createElement('div');
+      toast.className = 'toast-notification';
+      toast.innerHTML = `<span class="toast-icon">${icon || '⚠️'}</span> ${msg}`;
+      document.body.appendChild(toast);
+      requestAnimationFrame(() => toast.classList.add('show'));
+      const ms = duration || 3500;
+      setTimeout(() => { toast.classList.remove('show'); setTimeout(() => toast.remove(), 400); }, ms);
+    }
+
+    // ===== 上传状态更新 =====
+    function updateUploadStatus() {
+      const statusEl = document.getElementById('uploadStatus');
+      const icon = statusEl.querySelector('.pulse-dot');
+      const text = statusEl.querySelector('.status-text');
+      const momDone = !!document.getElementById('momInput').files[0];
+      const dadDone = !!document.getElementById('dadInput').files[0];
       const btn = document.getElementById('generateBtn');
-      if (momPhotoData && dadPhotoData) {
-        btn.innerHTML = '✅ Ready! See Plans & Pricing<span class="sub">Both photos uploaded — choose your plan below</span>';
-        btn.style.background = 'linear-gradient(135deg, #2ECC71, #27AE60)';
+
+      // 如果照片重复
+      if (momPhotoData && dadPhotoData && momPhotoData === dadPhotoData) {
+        statusEl.className = 'upload-status error';
+        icon.style.display = 'none';
+        text.textContent = '⚠️ Same photo detected — please upload a different photo for Dad';
+        btn.disabled = true;
+        btn.innerHTML = '⚠️ Photos are the same';
+        btn.className = 'btn-primary';
+        return;
+      }
+
+      btn.disabled = false;
+      statusEl.className = 'upload-status';
+      if (momDone && dadDone) {
+        statusEl.classList.add('ready');
+        text.textContent = '✅ Both photos uploaded! Click Generate to create your baby photos';
+        btn.innerHTML = '💎 Generate Your Baby Photos<span class="sub">$9.99 one-time · Two versions ready</span>';
+        btn.className = 'btn-primary ready';
+      } else if (momDone) {
+        text.textContent = '✅ Mom photo uploaded! 👉 Now upload Dad\'s photo';
+        btn.innerHTML = '💎 Generate Your Baby Photos<span class="sub">Upload both photos first</span>';
+        btn.className = 'btn-primary';
+      } else if (dadDone) {
+        text.textContent = '✅ Dad photo uploaded! 👉 Now upload Mom\'s photo';
+        btn.innerHTML = '💎 Generate Your Baby Photos<span class="sub">Upload both photos first</span>';
+        btn.className = 'btn-primary';
       } else {
-        btn.innerHTML = '✨ See Plans & Pricing<span class="sub">Starting at $9.99 · One-time payment</span>';
-        btn.style.background = '';
+        icon.style.display = '';
+        text.textContent = 'Upload both photos above, then click Generate';
+        btn.innerHTML = '💎 Generate Your Baby Photos<span class="sub">$9.99 one-time · No subscription · Instant result</span>';
+        btn.className = 'btn-primary';
       }
     }
 
+    // ===== 照片重复检测 =====
+    function checkDuplicatePhotos() {
+      if (!momPhotoData || !dadPhotoData) return false;
+      if (momPhotoData === dadPhotoData) {
+        showToast('⚠️ Mom and Dad photos are the same! For best results, use two different photos', '📸', 12000);
+        updateUploadStatus();
+        return true;
+      }
+      return false;
+    }
+
+    // ===== Upload Preview（带压缩） =====
     ['mom', 'dad'].forEach(id => {
       const input = document.getElementById(id + 'Input');
       const box = document.getElementById(id + 'Box');
@@ -1182,26 +1246,26 @@
             box.classList.add('has-image');
           };
           reader.readAsDataURL(file);
+          // 质量检测
+          checkPhotoQuality(file, function(isSharp) {
+            if (!isSharp) {
+              showToast('⚠️ Photo is a bit blurry — for best results, use a clear front-facing photo with good lighting', '📸');
+            }
+          });
           // 压缩保存
           compressImage(file, 1024, function(data) {
-            if (id === 'mom') momPhotoData = data;
-            else dadPhotoData = data;
-            updateBtnState();
+            if (id === 'mom') { momPhotoData = data; }
+            else { dadPhotoData = data; }
+            updateUploadStatus();
+            if (momPhotoData && dadPhotoData) checkDuplicatePhotos();
           });
         }
       });
     });
 
-    // ===== 订单管理 =====
-    function getOrders() {
-      return JSON.parse(localStorage.getItem('bl_orders') || '[]');
-    }
-    function saveOrders(orders) {
-      localStorage.setItem('bl_orders', JSON.stringify(orders));
-    }
-    function generateOrderId() {
-      return 'BL-' + Date.now().toString(36).toUpperCase() + '-' + Math.random().toString(36).substr(2,4).toUpperCase();
-    }
+    // ===== 当前订单状态（内存中，不清除不丢失） =====
+    let currentOrder = null; // 当前正在处理的订单
+
     function getActiveGender() {
       const active = document.querySelector('.gender-btn.active');
       return active ? active.dataset.gender : 'both';
@@ -1210,31 +1274,49 @@
     // ===== 检测付款成功回跳 =====
     (function() {
       const params = new URLSearchParams(window.location.search);
-      if (params.get('status') === 'success') {
-        // 把最新的 pending 订单标记为 paid
-        const orders = getOrders();
-        let found = false;
-        for (let i = orders.length - 1; i >= 0; i--) {
-          if (orders[i].status === 'pending') {
-            orders[i].status = 'paid';
-            orders[i].paidAt = new Date().toISOString();
-            found = true;
-            break;
+      if (params.get('status') === 'success' && params.get('order')) {
+        const orderId = params.get('order');
+        // 调服务器验证付款
+        (async function() {
+          try {
+            const res = await fetch('/api/verify', {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({ orderId }),
+            });
+            const data = await res.json();
+            if (data.success) {
+              document.getElementById('orderSuccess').style.display = 'block';
+              document.getElementById('generator').style.display = 'none';
+              window.history.replaceState({}, '', window.location.pathname);
+              // 重新加载订单信息后生成
+              loadAndGenerate(orderId);
+            } else {
+              console.error('[payment] Verify failed:', data.error);
+            }
+          } catch (err) {
+            console.error('[payment] Verify error:', err);
           }
-        }
-        if (found) {
-          saveOrders(orders);
-          document.getElementById('orderSuccess').classList.add('show');
-          document.getElementById('orderFormArea').classList.add('hidden');
-          // 清除 URL 参数
-          window.history.replaceState({}, '', window.location.pathname);
-        }
-        // 自动触发生成
-        if (found) {
-          autoGenerate();
-        }
+        })();
       }
     })();
+
+    // ===== 从服务器加载订单并生成 =====
+    async function loadAndGenerate(orderId) {
+      try {
+        const res = await fetch(`/api/orders/check?orderId=${orderId}`);
+        const data = await res.json();
+        if (data.success && data.order && data.order.status === 'paid') {
+          // 此时还没有照片数据，需要从服务器重新获取完整订单
+          // 通过/generate传递orderId让后端从数据库加载
+          currentOrder = { id: orderId };
+          // 照片数据在创建订单时已传服务器，generate时会从DB读取
+          startGeneration(orderId);
+        }
+      } catch (err) {
+        console.error('[loadAndGenerate] Error:', err);
+      }
+    }
 
     // ===== 下载图片 =====
     function downloadImg(imgId, filename) {
@@ -1247,67 +1329,147 @@
       document.body.removeChild(link);
     }
 
-    // ===== 自动调后端生成 + 页面显示 =====
-    async function autoGenerate() {
-      const orders = getOrders();
-      const paidOrder = orders.filter(o => o.status === 'paid').pop();
-      if (!paidOrder || paidOrder.generating) return;
-
-      paidOrder.generating = true;
-      saveOrders(orders);
+    // ===== 自动调后端生成（两阶段：先 Mom 后 Dad） =====
+    async function startGeneration(orderId) {
+      if (!currentOrder || !currentOrder.momPhoto) {
+        // 付款后回跳，从服务器获取照片
+        try {
+          const res = await fetch(`/api/orders/photos?orderId=${orderId}&password=babylens2024`);
+          const data = await res.json();
+          if (data.success && data.order) {
+            currentOrder = {
+              id: data.order.id,
+              momPhoto: data.order.momPhoto,
+              dadPhoto: data.order.dadPhoto,
+              plan: 'basic',
+              gender: 'both',
+            };
+          } else {
+            throw new Error('Failed to load order photos');
+          }
+        } catch (e) {
+          console.error('Failed to load order:', e);
+          showToast('❌ Failed to load your photos. Please contact support.', '⚠️');
+          return;
+        }
+      }
 
       document.getElementById('orderSuccess').style.display = 'block';
-      document.getElementById('orderFormArea').classList.add('hidden');
+      document.getElementById('generator').style.display = 'none';
 
       const statusEl = document.getElementById('generateStatus');
       const resultEl = document.getElementById('resultDisplay');
       const errorEl = document.getElementById('generateError');
+      const progressBar = document.getElementById('progressBar');
+      const progressText = document.getElementById('progressText');
+
+      function startFakeProgress(maxPc, label, intervalMs) {
+        let p = 0;
+        return setInterval(() => {
+          if (p < maxPc) {
+            p += Math.random() * 3 + 1;
+            if (p > maxPc) p = maxPc;
+            progressBar.style.width = p + '%';
+            progressText.textContent = label;
+          }
+        }, intervalMs || 600);
+      }
+
+      const momOrderId = orderId + '-M';
+      const dadOrderId = orderId + '-D';
 
       try {
-        const res = await fetch('/generate', {
+        // ===== 阶段 1：先生成 Mom 版 =====
+        progressText.textContent = '🧬 Analyzing your photos...';
+        progressBar.style.width = '5%';
+
+        const momProgress = startFakeProgress(55, '🧬 Generating Mom version...', 600);
+
+        const momRes = await fetch('/generate', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({
-            plan: paidOrder.plan,
-            gender: paidOrder.gender,
-            orderId: paidOrder.id,
-            momPhoto: paidOrder.momPhoto,
-            dadPhoto: paidOrder.dadPhoto,
+            plan: currentOrder.plan || 'basic',
+            gender: currentOrder.gender || 'both',
+            orderId: momOrderId,
+            momPhoto: currentOrder.momPhoto,
+            dadPhoto: currentOrder.dadPhoto,
+            side: 'mom'
           }),
         });
 
-        const data = await res.json();
+        clearInterval(momProgress);
 
-        if (data.success && data.images) {
-          // 显示图片
-          document.getElementById('resultMomImg').src = 'data:image/png;base64,' + data.images.babyFromMom;
-          document.getElementById('resultDadImg').src = 'data:image/png;base64,' + data.images.babyFromDad;
-          statusEl.style.display = 'none';
-          resultEl.style.display = 'block';
-          // 滚动到结果区
-          document.getElementById('orderSuccess').scrollIntoView({ behavior: 'smooth', block: 'center' });
-          // 庆祝弹窗
-          showCelebration();
-
-          // 标记订单已发货
-          const updatedOrders = getOrders();
-          const target = updatedOrders.find(o => o.id === paidOrder.id);
-          if (target) {
-            target.status = 'delivered';
-            target.deliveredAt = new Date().toISOString();
-            delete target.generating;
-            saveOrders(updatedOrders);
-          }
-        } else {
-          throw new Error(data.message || 'Generation failed');
+        const momData = await momRes.json();
+        if (!momData.success || !momData.images || !momData.images.babyFromMom) {
+          throw new Error(momData.message || 'Mom generation failed');
         }
+
+        // 立刻显示 Mom 版
+        const momBase64 = momData.images.babyFromMom;
+        document.getElementById('resultMomImg').src = 'data:image/png;base64,' + momBase64;
+        progressBar.style.width = '60%';
+        progressText.textContent = '✅ Mom version ready! Now generating Dad version...';
+
+        // ===== 阶段 2：再生成 Dad 版 =====
+        const dadProgress = startFakeProgress(90, '🧬 Generating Dad version...', 600);
+
+        const dadRes = await fetch('/generate', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            plan: currentOrder.plan || 'basic',
+            gender: currentOrder.gender || 'both',
+            orderId: dadOrderId,
+            momPhoto: currentOrder.momPhoto,
+            dadPhoto: currentOrder.dadPhoto,
+            side: 'dad'
+          }),
+        });
+
+        clearInterval(dadProgress);
+
+        let dadBase64 = '';
+        if (dadRes.ok) {
+          const dadData = await dadRes.json();
+          if (dadData.success && dadData.images && dadData.images.babyFromDad) {
+            dadBase64 = dadData.images.babyFromDad;
+            document.getElementById('resultDadImg').src = 'data:image/png;base64,' + dadBase64;
+          }
+        }
+
+        // 把生图结果保存到服务器数据库
+        try {
+          await fetch('/api/orders/save-result', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              orderId,
+              resultMom: momBase64,
+              resultDad: dadBase64,
+            }),
+          });
+        } catch (e) {
+          console.warn('Failed to save results to server:', e);
+        }
+
+        // 全部完成！
+        progressBar.style.width = '100%';
+        progressText.textContent = '✅ All done!';
+
+        statusEl.style.display = 'none';
+        resultEl.style.display = 'block';
+        document.getElementById('orderSuccess').scrollIntoView({ behavior: 'smooth', block: 'center' });
+
+        showCelebration();
+
+        // 清空当前订单和照片缓存
+        currentOrder = null;
+        momPhotoData = null;
+        dadPhotoData = null;
+
       } catch (err) {
         console.error('Auto-generate error:', err);
-        const updatedOrders = getOrders();
-        const target = updatedOrders.find(o => o.id === paidOrder.id);
-        if (target) delete target.generating;
-        saveOrders(updatedOrders);
-
         statusEl.style.display = 'none';
         errorEl.style.display = 'block';
         document.getElementById('errorMessage').textContent = err.message;
@@ -1319,44 +1481,95 @@
       document.getElementById('generateError').style.display = 'none';
       document.getElementById('generateStatus').style.display = 'block';
       document.getElementById('resultDisplay').style.display = 'none';
-      autoGenerate();
+      if (currentOrder) {
+        startGeneration(currentOrder.id);
+      }
     }
 
-    // ===== PayPal 点击时保存订单 =====
-    // ===== Generate 按钮 → 滚动到定价区 =====
-    document.getElementById('generateBtn').addEventListener('click', function() {
+    // ===== Generate 按钮 → 调用服务器创建订单 + 跳转 PayPal 支付 =====
+    document.getElementById('generateBtn').addEventListener('click', async function() {
       if (!momPhotoData || !dadPhotoData) {
-        alert('Please upload both Mom and Dad photos first!');
+        showToast('Please upload both Mom and Dad photos first!', '📸');
+        document.getElementById('momInput').focus();
         return;
       }
-      document.getElementById('pricing').scrollIntoView({ behavior: 'smooth', block: 'start' });
+      if (momPhotoData === dadPhotoData) {
+        showToast('Mom and Dad photos appear to be the same! Please upload a different photo.', '⚠️');
+        return;
+      }
+      await serverPay('basic');
     });
 
-    // ===== PayPal 点击时保存订单 =====
-    document.querySelectorAll('.paypal-form').forEach(form => {
-      form.addEventListener('submit', function(e) {
-        if (!momPhotoData || !dadPhotoData) {
-          e.preventDefault();
-          alert('Please upload both Mom and Dad photos first!');
-          return;
-        }
-        const plan = this.dataset.plan;
-        const orderId = generateOrderId();
-        const gender = getActiveGender();
-        const orders = getOrders();
-        orders.push({
-          id: orderId,
-          plan: plan,
-          gender: gender,
-          momPhoto: momPhotoData,
-          dadPhoto: dadPhotoData,
-          createdAt: new Date().toISOString(),
-          status: 'pending'
+    // ===== 服务器端创建订单 + PayPal 支付 =====
+    async function serverPay(plan) {
+      if (!momPhotoData || !dadPhotoData) {
+        showToast('Please upload both Mom and Dad photos first!', '📸');
+        document.getElementById('momInput').focus();
+        return;
+      }
+
+      const gender = getActiveGender();
+      const payBtn = document.getElementById('generateBtn');
+      payBtn.disabled = true;
+      payBtn.textContent = '⏳ Creating order...';
+
+      try {
+        // 1. 在服务器创建订单（照片存入 D1）
+        const res = await fetch('/api/orders', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            plan,
+            gender,
+            momPhoto: momPhotoData,
+            dadPhoto: dadPhotoData,
+          }),
         });
-        saveOrders(orders);
-        this.querySelector('.order-id-input').value = orderId;
-      });
-    });
+
+        const data = await res.json();
+        if (!data.success) {
+          throw new Error(data.message || 'Failed to create order');
+        }
+
+        currentOrder = { id: data.orderId, plan, gender, momPhoto: momPhotoData, dadPhoto: dadPhotoData };
+
+        // 2. 打开 PayPal 支付页
+        window.open(data.paypalUrl, '_blank');
+
+        showToast('📋 Order created! Complete payment in the PayPal window.', '🅿️');
+        payBtn.textContent = '⏳ Waiting for payment...';
+
+        // 3. 轮询等待付款确认（最多等5分钟）
+        const maxWait = Date.now() + 5 * 60 * 1000;
+        const pollInterval = setInterval(async () => {
+          try {
+            const check = await fetch(`/api/orders/check?orderId=${data.orderId}`);
+            const checkData = await check.json();
+            if (checkData.success && checkData.order && checkData.order.status === 'paid') {
+              clearInterval(pollInterval);
+              payBtn.disabled = false;
+              payBtn.textContent = '🤖 Generating...';
+              document.getElementById('orderSuccess').style.display = 'block';
+              document.getElementById('generator').style.display = 'none';
+              startGeneration(data.orderId);
+            }
+          } catch (e) { /* ignore polling errors */ }
+          if (Date.now() > maxWait) {
+            clearInterval(pollInterval);
+            payBtn.disabled = false;
+            payBtn.textContent = '🤱 Generate Baby Now — $9.99';
+            showToast('⏰ Payment timeout. Please try again.', '⏰');
+          }
+        }, 3000);
+
+      } catch (err) {
+        console.error('[serverPay] Error:', err);
+        showToast('❌ ' + err.message, '⚠️');
+        payBtn.disabled = false;
+        payBtn.textContent = '🤱 Generate Baby Now — $9.99';
+      }
+    }
+    }
 
     // ===== 庆祝弹窗 =====
     function showCelebration() {
@@ -1374,75 +1587,234 @@
       document.body.appendChild(overlay);
     }
 
-    // ===== 管理员面板功能 =====
-    function renderAdmin() {
-      const orders = getOrders();
-      const list = document.getElementById('adminOrderList');
-      const count = document.getElementById('orderCount');
-      const pending = orders.filter(o => o.status === 'pending' || o.status === 'paid');
-      count.textContent = pending.length;
-      if (orders.length === 0) {
-        list.innerHTML = '<div style="text-align:center;padding:30px 0;color:#B2BEC3;">暂无订单</div>';
-        return;
+    // ===== 管理员面板功能（从服务器 API 加载） =====
+    async function renderAdmin() {
+      try {
+        const res = await fetch('/api/orders?password=babylens2024');
+        const data = await res.json();
+        const orders = data.success ? data.orders : [];
+        const list = document.getElementById('adminOrderList');
+        const count = document.getElementById('orderCount');
+        const pending = orders.filter(o => o.status === 'pending' || o.status === 'paid');
+        count.textContent = pending.length;
+        if (orders.length === 0) {
+          list.innerHTML = '<div style="text-align:center;padding:30px 0;color:#B2BEC3;">暂无订单</div>';
+          return;
+        }
+        let html = '';
+        orders.forEach((o, i) => {
+          const planName = o.plan === 'free' ? 'Free Trial' : 'Basic ($9.99)';
+          const time = new Date(o.created_at).toLocaleString('zh-CN', {hour12:false});
+          const paidTime = o.paid_at ? new Date(o.paid_at).toLocaleString('zh-CN', {hour12:false}) : '';
+          const statusMap = {pending:'⏳ 待付款', paid:'✅ 已付款-待生成', generating:'🤖 生成中', delivered:'📬 已发货'};
+          const statusColor = {pending:'#F39C12', paid:'#2ECC71', generating:'#3498DB', delivered:'#3498DB'};
+          html += `<div style="border:1px solid #eee;border-radius:12px;padding:12px;margin-bottom:10px;">
+            <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px;">
+              <span style="font-weight:700;font-size:0.85rem;color:${statusColor[o.status]};">${statusMap[o.status] || o.status}</span>
+              <span style="font-size:0.7rem;color:#999;">#${o.id}</span>
+            </div>
+            <div style="font-size:0.85rem;color:#555;line-height:1.8;">
+              📦 ${planName} · ${o.gender === 'both' ? '👶 男女' : o.gender === 'boy' ? '👦 男' : '👧 女'}<br>
+              🕐 ${time}<br>
+              ${o.paid_at ? '✅ 付款: ' + paidTime : ''}
+            </div>
+            <div style="display:flex;gap:6px;margin-top:8px;">
+              <button onclick="viewOrderPhotos('${o.id}')" style="flex:1;padding:7px;border:1px solid #ddd;border-radius:8px;background:white;cursor:pointer;font-size:0.8rem;">📸 照片</button>
+              <button onclick="adminRegenerate('${o.id}')" style="flex:1;padding:7px;border:1px solid #3498DB;border-radius:8px;background:#E8F0FE;cursor:pointer;font-size:0.8rem;color:#2980B9;font-weight:600;">🔄 Regenerate</button>
+            </div>
+          </div>`;
+        });
+        list.innerHTML = html;
+        window._adminOrders = orders;
+      } catch (err) {
+        console.error('Admin load error:', err);
+        document.getElementById('adminOrderList').innerHTML = '<div style="text-align:center;padding:30px 0;color:#E74C3C;">❌ 加载失败: ' + err.message + '</div>';
       }
-      let html = '';
-      orders.forEach((o, i) => {
-        const planName = o.plan === 'basic' ? 'Basic ($9.99)' : 'Premium ($17.99)';
-        const time = new Date(o.createdAt).toLocaleString('zh-CN', {hour12:false});
-        const paidTime = o.paidAt ? new Date(o.paidAt).toLocaleString('zh-CN', {hour12:false}) : '';
-        const statusMap = {pending:'⏳ 待付款', paid:'✅ 已付款-待处理', delivered:'📬 已发货'};
-        const statusColor = {pending:'#F39C12', paid:'#2ECC71', delivered:'#3498DB'};
-        html += `<div style="border:1px solid #eee;border-radius:12px;padding:12px;margin-bottom:10px;">
-          <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px;">
-            <span style="font-weight:700;font-size:0.85rem;color:${statusColor[o.status]};">${statusMap[o.status] || o.status}</span>
-            <span style="font-size:0.7rem;color:#999;">#${o.id}</span>
-          </div>
-          <div style="font-size:0.85rem;color:#555;line-height:1.8;">
-            📦 ${planName} · ${o.gender === 'both' ? '👶 男女' : o.gender === 'boy' ? '👦 男' : '👧 女'}<br>
-            🕐 ${time}<br>
-            ${o.paidAt ? '✅ 付款: ' + paidTime : ''}
-          </div>
-          <div style="display:flex;gap:6px;margin-top:8px;">
-            <button onclick="viewOrderPhotos(${i})" style="flex:1;padding:7px;border:1px solid #ddd;border-radius:8px;background:white;cursor:pointer;font-size:0.8rem;">📸 照片</button>
-            <button onclick="markDelivered(${i})" style="flex:1;padding:7px;border:1px solid #2ECC71;border-radius:8px;background:#E8F8F0;cursor:pointer;font-size:0.8rem;color:#27AE60;font-weight:600;">✅ 已发货</button>
-            <button onclick="deleteOrder(${i})" style="padding:7px 10px;border:1px solid #E74C3C;border-radius:8px;background:#FDEDEC;cursor:pointer;font-size:0.8rem;color:#E74C3C;">🗑️</button>
-          </div>
-        </div>`;
-      });
-      list.innerHTML = html;
     }
 
-    function viewOrderPhotos(index) {
-      const orders = getOrders();
-      const o = orders[index];
-      document.getElementById('photoOverlayOrder').textContent = '📋 订单 #' + o.id;
-      document.getElementById('photoMom').src = o.momPhoto;
-      document.getElementById('photoDad').src = o.dadPhoto;
-      document.getElementById('photoOverlay').style.display = 'flex';
+    async function viewOrderPhotos(orderId) {
+      try {
+        const res = await fetch(`/api/orders/photos?orderId=${orderId}&password=babylens2024`);
+        const data = await res.json();
+        if (data.success && data.order) {
+          document.getElementById('photoOverlayOrder').textContent = '📋 订单 #' + data.order.id;
+          document.getElementById('photoMom').src = data.order.momPhoto || '';
+          document.getElementById('photoDad').src = data.order.dadPhoto || '';
+          document.getElementById('photoOverlay').style.display = 'flex';
+        }
+      } catch (err) {
+        showToast('❌ 加载照片失败: ' + err.message, '⚠️');
+      }
     }
 
     function closePhotoOverlay() {
       document.getElementById('photoOverlay').style.display = 'none';
     }
 
-    function markDelivered(index) {
-      if (!confirm('标记此订单为「已发货」？')) return;
-      const orders = getOrders();
-      orders[index].status = 'delivered';
-      orders[index].deliveredAt = new Date().toISOString();
-      saveOrders(orders);
-      renderAdmin();
+    async function adminRegenerate(orderId) {
+      if (!confirm('手动重新生成此订单？')) return;
+      showToast('🔄 正在重新生成...', '🤖');
+      try {
+        // 从服务器获取订单照片
+        const photoRes = await fetch(`/api/orders/photos?orderId=${orderId}&password=babylens2024`);
+        const photoData = await photoRes.json();
+        if (!photoData.success || !photoData.order) {
+          throw new Error('Failed to load order photos');
+        }
+        const order = photoData.order;
+        const genRes = await fetch('/generate', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            plan: 'basic',
+            gender: 'both',
+            orderId: orderId + '-R',
+            momPhoto: order.momPhoto,
+            dadPhoto: order.dadPhoto,
+          }),
+        });
+        const genData = await genRes.json();
+        if (genData.success && genData.images) {
+          // 保存结果到服务器
+          await fetch('/api/orders/save-result', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              orderId,
+              resultMom: genData.images.babyFromMom || '',
+              resultDad: genData.images.babyFromDad || '',
+            }),
+          });
+          showToast('✅ 重新生成成功！', '🎉');
+          renderAdmin();
+        } else {
+          throw new Error(genData.message || 'Generation failed');
+        }
+      } catch (err) {
+        showToast('❌ 重新生成失败: ' + err.message, '⚠️');
+      }
     }
 
-    function deleteOrder(index) {
-      if (!confirm('确认删除此订单？')) return;
-      const orders = getOrders();
-      orders.splice(index, 1);
-      saveOrders(orders);
-      renderAdmin();
+    // ===== Sandbox 模式 =====
+    let sandboxMode = false;
+    function toggleSandbox() {
+      sandboxMode = !sandboxMode;
+      const btn = document.getElementById('sandboxToggle');
+      const sbBasic = document.getElementById('sandbox-btn-basic');
+      var pbBasic = document.getElementById('paypal-btn-basic');
+      if (sandboxMode) {
+        btn.style.background = '#6C5CE7';
+        btn.textContent = '🔬 Sandbox: ON';
+        sbBasic.style.display = 'block';
+        pbBasic.style.display = 'none';
+      } else {
+        btn.style.background = '#636E72';
+        btn.textContent = '🔬 Sandbox: OFF';
+        sbBasic.style.display = 'none';
+        pbBasic.style.display = '';
+      }
     }
 
-    // ===== 管理员入口点击 =====
+    function sandboxPay(plan) {
+      if (!momPhotoData || !dadPhotoData) {
+        showToast('Please upload both Mom and Dad photos first!', '📸');
+        return;
+      }
+      const overlay = document.createElement('div');
+      overlay.id = 'sandboxOverlay';
+      overlay.style = 'position:fixed;inset:0;z-index:5000;display:flex;align-items:center;justify-content:center;background:rgba(0,0,0,0.5);backdrop-filter:blur(4px);animation:fadeIn 0.2s ease;';
+      overlay.innerHTML = `
+        <div style="background:white;border-radius:20px;padding:32px;max-width:400px;width:90%;box-shadow:0 20px 60px rgba(0,0,0,0.25);animation:popIn 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);">
+          <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:20px;">
+            <img src="https://www.paypalobjects.com/webstatic/icon/pp258.png" style="height:28px;" alt="PayPal">
+            <span style="color:#999;font-size:0.85rem;">🔬 Sandbox Test</span>
+          </div>
+          <div style="margin-bottom:20px;">
+            <div style="font-size:0.9rem;color:#666;margin-bottom:4px;">BabyLens AI Basic</div>
+            <div style="font-size:2rem;font-weight:700;color:#1a1a1a;">$9.99</div>
+          </div>
+          <div style="background:#F7F9FC;border-radius:12px;padding:16px;margin-bottom:16px;">
+            <div style="font-size:0.8rem;color:#666;margin-bottom:8px;">🧪 Test Card (sandbox)</div>
+            <div style="font-family:monospace;font-size:1.1rem;letter-spacing:2px;color:#1a1a1a;margin-bottom:4px;">4111 1111 1111 1111</div>
+            <div style="display:flex;gap:16px;font-family:monospace;font-size:0.85rem;color:#888;">
+              <span>Exp: 12/28</span><span>CVC: 123</span>
+            </div>
+          </div>
+          <button id="sandboxConfirmBtn" style="width:100%;padding:14px;background:linear-gradient(135deg,#0070BA,#1546A0);color:white;border:none;border-radius:50px;font-size:1.1rem;font-weight:700;cursor:pointer;">💳 Pay $9.99</button>
+          <button onclick="document.getElementById('sandboxOverlay').remove()" style="width:100%;padding:10px;background:none;border:none;color:#999;font-size:0.9rem;cursor:pointer;margin-top:8px;">Cancel</button>
+        </div>
+      `;
+      document.body.appendChild(overlay);
+      document.getElementById('sandboxConfirmBtn').addEventListener('click', async function() {
+        document.getElementById('sandboxOverlay').remove();
+        // 服务器创建订单
+        try {
+          const res = await fetch('/api/orders', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              plan,
+              gender: getActiveGender(),
+              momPhoto: momPhotoData,
+              dadPhoto: dadPhotoData,
+            }),
+          });
+          const data = await res.json();
+          if (data.success) {
+            currentOrder = { id: data.orderId, plan, gender: getActiveGender(), momPhoto: momPhotoData, dadPhoto: dadPhotoData };
+            // Sandbox：直接标记为已付款
+            await fetch('/api/verify', {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({ orderId: data.orderId }),
+            });
+            document.getElementById('orderSuccess').style.display = 'block';
+            document.getElementById('generator').style.display = 'none';
+            document.getElementById('adminPanel').style.display = 'none';
+            startGeneration(data.orderId);
+          }
+        } catch (err) {
+          showToast('❌ ' + err.message, '⚠️');
+        }
+      });
+    }
+
+    // ===== Quick Test 支付按钮 =====
+    async function testPayment(plan) {
+      if (!momPhotoData || !dadPhotoData) {
+        showToast('Please upload both Mom and Dad photos first!', '📸');
+        return;
+      }
+      try {
+        const res = await fetch('/api/orders', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            plan,
+            gender: getActiveGender(),
+            momPhoto: momPhotoData,
+            dadPhoto: dadPhotoData,
+          }),
+        });
+        const data = await res.json();
+        if (data.success) {
+          currentOrder = { id: data.orderId, plan, gender: getActiveGender(), momPhoto: momPhotoData, dadPhoto: dadPhotoData };
+          await fetch('/api/verify', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ orderId: data.orderId }),
+          });
+          document.getElementById('orderSuccess').style.display = 'block';
+          document.getElementById('generator').style.display = 'none';
+          document.getElementById('adminPanel').style.display = 'none';
+          startGeneration(data.orderId);
+        }
+      } catch (err) {
+        showToast('❌ ' + err.message, '⚠️');
+      }
+    }
+
+    // ===== 管理员入口 =====
     let adminUnlocked = false;
     document.getElementById('adminToggle').addEventListener('click', function() {
       if (adminUnlocked) {
@@ -1475,16 +1847,10 @@
       item.classList.toggle('open');
     }
 
-    // ===== Generate Button =====
-    document.getElementById('generateBtn').addEventListener('click', function() {
-      const momFile = document.getElementById('momInput').files[0];
-      const dadFile = document.getElementById('dadInput').files[0];
-      if (!momFile || !dadFile) {
-        alert('Please upload both Mom and Dad photos first!');
-        return;
-      }
-      document.getElementById('pricing').scrollIntoView({ behavior: 'smooth' });
-    });
+    // ===== 页面加载 =====
+    (function() {
+      updateUploadStatus();
+    })();
 
   </script>
 
