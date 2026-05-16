@@ -1276,28 +1276,33 @@
       const params = new URLSearchParams(window.location.search);
       if (params.get('status') === 'success' && params.get('order')) {
         const orderId = params.get('order');
-        // 调服务器验证付款
+        // 等待 PayPal IPN 回调标记付款（轮询替代原来的无条件 verify）
         (async function() {
-          try {
-            const res = await fetch('/api/verify', {
-              method: 'POST',
-              headers: { 'Content-Type': 'application/json' },
-              body: JSON.stringify({ orderId }),
-            });
-            const data = await res.json();
-            if (data.success) {
-              document.getElementById('orderSuccess').style.display = 'block';
-              document.getElementById('generator').style.display = 'none';
-              window.history.replaceState({}, '', window.location.pathname);
-              // 重新加载订单信息后生成
-              loadAndGenerate(orderId);
-            } else {
-              console.error('[payment] Verify failed:', data.error);
-            }
-          } catch (err) {
-            console.error('[payment] Verify error:', err);
-          }
+          document.getElementById('orderSuccess').style.display = 'block';
+          document.getElementById('generator').style.display = 'none';
+          window.history.replaceState({}, '', window.location.pathname);
+          // 开始轮询，等 IPN 处理完成
+          pollOrderStatus(orderId);
         })();
+
+    // ===== 轮询订单状态（等 IPN 回调） =====
+    async function pollOrderStatus(orderId) {
+      for (let i = 0; i < 30; i++) {
+        try {
+          const res = await fetch(`/api/orders/check?orderId=${orderId}`);
+          const data = await res.json();
+          if (data.success && data.order && data.order.status === 'paid') {
+            console.log('[payment] ✅ Order paid via IPN');
+            loadAndGenerate(orderId);
+            return;
+          }
+        } catch (err) {
+          console.error('[payment] Poll error:', err);
+        }
+        await new Promise(r => setTimeout(r, 2000));
+      }
+      console.error('[payment] ❌ Timed out waiting for payment confirmation');
+    }
       }
     })();
 
@@ -1798,11 +1803,11 @@
           const data = await res.json();
           if (data.success) {
             currentOrder = { id: data.orderId, plan, gender: getActiveGender(), momPhoto: momPhotoData, dadPhoto: dadPhotoData };
-            // Sandbox：直接标记为已付款
-            await fetch('/api/verify', {
+            // Sandbox：管理员强制标记付款
+            await fetch('/api/admin-force-pay', {
               method: 'POST',
               headers: { 'Content-Type': 'application/json' },
-              body: JSON.stringify({ orderId: data.orderId }),
+              body: JSON.stringify({ orderId: data.orderId, password: 'babylens2024' }),
             });
             document.getElementById('orderSuccess').style.display = 'block';
             document.getElementById('generator').style.display = 'none';
@@ -1835,10 +1840,10 @@
         const data = await res.json();
         if (data.success) {
           currentOrder = { id: data.orderId, plan, gender: getActiveGender(), momPhoto: momPhotoData, dadPhoto: dadPhotoData };
-          await fetch('/api/verify', {
+          await fetch('/api/admin-force-pay', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ orderId: data.orderId }),
+            body: JSON.stringify({ orderId: data.orderId, password: 'babylens2024' }),
           });
           document.getElementById('orderSuccess').style.display = 'block';
           document.getElementById('generator').style.display = 'none';

@@ -1,15 +1,13 @@
 /**
- * BabyLens AI - Payment Verification API
+ * BabyLens AI - Admin Force Pay (for Sandbox/QuickTest only)
  *
- * POST /api/verify → Verify payment and mark order as paid
+ * POST /api/admin-force-pay → Mark order as paid (requires admin password)
  *
- * 验证策略：
- * 1. 前端在付款跳回后调用此 API
- * 2. 服务器验证订单存在且为 pending 状态
- * 3. 将状态标记为 paid，允许后续生成照片
- * 4. 后续可升级为 PayPal PDT/IPN 验证
+ * 注意：这个端点仅供管理后台测试用，需要管理员密码验证。
+ * 真实用户付款必须走 PayPal IPN 回调。
  */
 
+const ADMIN_PASSWORD = 'babylens2024';
 const CORS_HEADERS = {
   'Access-Control-Allow-Origin': '*',
   'Access-Control-Allow-Methods': 'POST, OPTIONS',
@@ -33,7 +31,7 @@ export async function onRequest(context) {
 
   try {
     const body = await request.json();
-    const { orderId } = body;
+    const { orderId, password } = body;
 
     if (!orderId) {
       return new Response(JSON.stringify({ error: 'Missing orderId' }), {
@@ -42,7 +40,13 @@ export async function onRequest(context) {
       });
     }
 
-    // 查找订单
+    if (password !== ADMIN_PASSWORD) {
+      return new Response(JSON.stringify({ error: 'Unauthorized' }), {
+        status: 401,
+        headers: CORS_HEADERS,
+      });
+    }
+
     const order = await env.DB.prepare(
       `SELECT * FROM orders WHERE id = ?`
     ).bind(orderId).first();
@@ -55,45 +59,27 @@ export async function onRequest(context) {
     }
 
     if (order.status === 'paid') {
-      // 已经付过款了，幂等返回
       return new Response(
-        JSON.stringify({
-          success: true,
-          message: 'Already paid',
-          orderId: order.id,
-        }),
+        JSON.stringify({ success: true, message: 'Already paid', orderId: order.id }),
         { status: 200, headers: CORS_HEADERS }
       );
     }
 
-    if (order.status !== 'pending') {
-      return new Response(JSON.stringify({ error: `Order status is ${order.status}, cannot verify` }), {
-        status: 400,
-        headers: CORS_HEADERS,
-      });
-    }
-
-    // 标记为已付款
     const now = new Date().toISOString();
     await env.DB.prepare(
       `UPDATE orders SET status = 'paid', paid_at = ? WHERE id = ?`
     ).bind(now, orderId).run();
 
-    console.log(`[verify] ✅ Order ${orderId} marked as paid`);
+    console.log(`[admin-force-pay] ✅ Order ${orderId} marked as paid (admin)`);
 
     return new Response(
-      JSON.stringify({
-        success: true,
-        message: 'Payment verified',
-        orderId,
-        paidAt: now,
-      }),
+      JSON.stringify({ success: true, message: 'Payment forced (admin)', orderId, paidAt: now }),
       { status: 200, headers: CORS_HEADERS }
     );
   } catch (err) {
-    console.error('[verify] Error:', err.message);
+    console.error('[admin-force-pay] Error:', err.message);
     return new Response(
-      JSON.stringify({ error: 'Verification failed', message: err.message }),
+      JSON.stringify({ error: 'Failed', message: err.message }),
       { status: 500, headers: CORS_HEADERS }
     );
   }
