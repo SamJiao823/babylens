@@ -1486,7 +1486,7 @@
       }
     }
 
-    // ===== Generate 按钮 → 调用服务器创建订单 + 跳转 PayPal 支付 =====
+    // ===== Generate 按钮 → 先弹确认窗口 → 确认后再调用服务器创建订单 + 跳转 PayPal =====
     document.getElementById('generateBtn').addEventListener('click', async function() {
       if (!momPhotoData || !dadPhotoData) {
         showToast('Please upload both Mom and Dad photos first!', '📸');
@@ -1497,8 +1497,45 @@
         showToast('Mom and Dad photos appear to be the same! Please upload a different photo.', '⚠️');
         return;
       }
-      await serverPay('basic');
+      // 弹出确认窗口，用户确认后才跳 PayPal
+      showConfirmModal();
     });
+
+    // ===== 支付确认弹窗 =====
+    function showConfirmModal() {
+      const genderText = {both:'👶 Boy & Girl', boy:'👦 Boy', girl:'👧 Girl'};
+      const overlay = document.createElement('div');
+      overlay.id = 'confirmPayOverlay';
+      overlay.style.cssText = 'position:fixed;inset:0;z-index:5000;display:flex;align-items:center;justify-content:center;background:rgba(0,0,0,0.5);backdrop-filter:blur(4px);animation:fadeIn 0.2s ease;';
+      overlay.innerHTML = `
+        <div style="background:white;border-radius:24px;padding:32px;max-width:400px;width:90%;box-shadow:0 20px 60px rgba(0,0,0,0.25);animation:popIn 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);text-align:center;">
+          <div style="font-size:3rem;margin-bottom:12px;">💎</div>
+          <h2 style="font-family:'Nunito',sans-serif;font-size:1.4rem;margin-bottom:6px;color:#333;">Confirm Your Order</h2>
+          <p style="color:#888;font-size:0.9rem;margin-bottom:20px;">Generate your future baby photos</p>
+          <div style="background:#FFF8F5;border-radius:16px;padding:16px;margin-bottom:20px;text-align:left;">
+            <div style="display:flex;justify-content:space-between;padding:6px 0;font-size:0.9rem;">
+              <span style="color:#888;">Plan</span>
+              <span style="font-weight:600;">BabyLens AI Basic</span>
+            </div>
+            <div style="display:flex;justify-content:space-between;padding:6px 0;font-size:0.9rem;">
+              <span style="color:#888;">Gender</span>
+              <span style="font-weight:600;">${genderText[getActiveGender()] || '👶 Both'}</span>
+            </div>
+            <div style="display:flex;justify-content:space-between;padding:6px 0;font-size:0.9rem;border-top:1px solid #f0e0e0;margin-top:6px;padding-top:12px;">
+              <span style="color:#888;">Total</span>
+              <span style="font-weight:700;font-size:1.3rem;color:#FF6B8A;">$9.99</span>
+            </div>
+          </div>
+          <button id="confirmPayBtn" style="width:100%;padding:14px;background:linear-gradient(135deg,#0070BA,#1546A0);color:white;border:none;border-radius:50px;font-size:1.1rem;font-weight:700;cursor:pointer;font-family:'Nunito',sans-serif;">🅿️ Pay $9.99 with PayPal</button>
+          <button onclick="document.getElementById('confirmPayOverlay').remove()" style="width:100%;padding:10px;background:none;border:none;color:#999;font-size:0.9rem;cursor:pointer;margin-top:8px;font-family:'Nunito',sans-serif;">Cancel</button>
+        </div>
+      `;
+      document.body.appendChild(overlay);
+      document.getElementById('confirmPayBtn').addEventListener('click', function() {
+        document.getElementById('confirmPayOverlay').remove();
+        serverPay('basic');
+      });
+    }
 
     // ===== 服务器端创建订单 + PayPal 支付 =====
     async function serverPay(plan) {
@@ -1568,7 +1605,6 @@
         payBtn.disabled = false;
         payBtn.textContent = '🤱 Generate Baby Now — $9.99';
       }
-    }
     }
 
     // ===== 庆祝弹窗 =====

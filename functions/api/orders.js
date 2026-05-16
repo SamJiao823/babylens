@@ -1,9 +1,11 @@
 /**
  * BabyLens AI - Order Management API
  *
- * POST /api/orders       → Create a new payment order (stores photos server-side)
- * GET  /api/orders       → List all orders (admin, requires password)
- * GET  /api/orders/check → Check if order is paid (polling for frontend)
+ * POST /api/orders             → Create a new payment order
+ * GET  /api/orders             → List all orders (admin)
+ * GET  /api/orders/check       → Poll order status (frontend)
+ * GET  /api/orders/photos      → Get order photos (admin)
+ * POST /api/orders/save-result → Save generation results
  */
 
 const ADMIN_PASSWORD = 'babylens2024';
@@ -24,35 +26,29 @@ function generateOrderId() {
 export async function onRequest(context) {
   const { request, env } = context;
   const url = new URL(request.url);
-  const path = url.pathname.replace(/\/+$/, ''); // 去掉尾部斜杠
+  const path = url.pathname.replace(/\/+$/, '');
   const method = request.method;
 
-  // OPTIONS preflight
   if (method === 'OPTIONS') {
     return new Response('', { status: 204, headers: CORS_HEADERS });
   }
 
-  // POST /api/orders — 创建订单
   if (method === 'POST' && (path === '/api/orders' || path === '/api/orders/')) {
     return handleCreateOrder(request, env);
   }
 
-  // GET /api/orders — 管理员查看所有订单
   if (method === 'GET' && (path === '/api/orders' || path === '/api/orders/')) {
-    return handleListOrders(request, env);
+    return handleListOrders(request, env, url);
   }
 
-  // GET /api/orders/check?orderId=XXX — 前端轮询订单状态
   if (method === 'GET' && path.endsWith('/check')) {
     return handleCheckOrder(request, env, url);
   }
 
-  // GET /api/orders/photos?orderId=XXX — 管理员查看订单照片
   if (method === 'GET' && path.endsWith('/photos')) {
     return handleGetPhotos(request, env, url);
   }
 
-  // POST /api/orders/save-result — 保存生成结果
   if (method === 'POST' && path.endsWith('/save-result')) {
     return handleSaveResult(request, env);
   }
@@ -63,7 +59,7 @@ export async function onRequest(context) {
   });
 }
 
-// ─── POST /api/orders ──────────────────────────────────────────────────────
+// ─── POST /api/orders — 创建订单 ──────────────────────────────────────────
 async function handleCreateOrder(request, env) {
   try {
     const body = await request.json();
@@ -71,22 +67,19 @@ async function handleCreateOrder(request, env) {
 
     if (!momPhoto || !dadPhoto) {
       return new Response(JSON.stringify({ error: 'Missing parent photos' }), {
-        status: 400,
-        headers: CORS_HEADERS,
+        status: 400, headers: CORS_HEADERS,
       });
     }
 
     const orderId = generateOrderId();
-    const verificationToken = crypto.randomUUID(); // 服务器端验证用
+    const verificationToken = crypto.randomUUID();
     const now = new Date().toISOString();
 
-    // 写入 D1
     await env.DB.prepare(
       `INSERT INTO orders (id, plan, gender, amount, status, mom_photo, dad_photo, created_at)
        VALUES (?, ?, ?, 9.99, 'pending', ?, ?, ?)`
     ).bind(orderId, plan, gender, momPhoto, dadPhoto, now).run();
 
-    // 在 custom 字段传 verificationToken（PayPal 原样返回）
     const paypalUrl =
       `https://www.paypal.com/cgi-bin/webscr?` +
       `cmd=_xclick` +
@@ -96,41 +89,32 @@ async function handleCreateOrder(request, env) {
       `&currency_code=USD` +
       `&return=${encodeURIComponent('https://babylens.pages.dev?status=success&order=' + orderId)}` +
       `&cancel_return=${encodeURIComponent('https://babylens.pages.dev')}` +
-      `&custom=${verificationToken}` +
+      `&notify_url=${encodeURIComponent('https://babylens.pages.dev/api/paypal-ipn')}` +
+      `&custom=${orderId}:${verificationToken}` +
       `&no_note=1` +
       `&no_shipping=1` +
       `&lc=US` +
       `&bn=PP-BuyNowBF%3Abtn_buynowCC_LG` +
-      `&useraction=commit`;
+      `&useraction=commit` +
+      `&solution_type=Sole` +
+      `&landing_page=billing`;
 
-    console.log(`[orders] Created order ${orderId}`);
-
-    return new Response(
-      JSON.stringify({
-        success: true,
-        orderId,
-        verificationToken,
-        paypalUrl,
-      }),
-      { status: 200, headers: CORS_HEADERS }
-    );
+    return new Response(JSON.stringify({ success: true, orderId, verificationToken, paypalUrl }), {
+      status: 200, headers: CORS_HEADERS,
+    });
   } catch (err) {
-    console.error('[orders] Create error:', err.message);
-    return new Response(
-      JSON.stringify({ error: 'Failed to create order', message: err.message }),
-      { status: 500, headers: CORS_HEADERS }
-    );
+    return new Response(JSON.stringify({ error: 'Failed to create order', message: err.message }), {
+      status: 500, headers: CORS_HEADERS,
+    });
   }
 }
 
-// ─── GET /api/orders （管理员） ─────────────────────────────────────────────
-async function handleListOrders(request, env) {
-  const pw = request.headers.get('X-Admin-Password') ||
-             new URL(request.url).searchParams.get('password');
+// ─── GET /api/orders — 管理员查看 ──────────────────────────────────────────
+async function handleListOrders(request, env, url) {
+  const pw = request.headers.get('X-Admin-Password') || url.searchParams.get('password');
   if (pw !== ADMIN_PASSWORD) {
     return new Response(JSON.stringify({ error: 'Unauthorized' }), {
-      status: 401,
-      headers: CORS_HEADERS,
+      status: 401, headers: CORS_HEADERS,
     });
   }
 
@@ -138,14 +122,50 @@ async function handleListOrders(request, env) {
     const { results } = await env.DB.prepare(
       `SELECT * FROM orders ORDER BY created_at DESC LIMIT 50`
     ).all();
-
     return new Response(JSON.stringify({ success: true, orders: results }), {
-      status: 200,
-      headers: CORS_HEADERS,
+      status: 200, headers: CORS_HEADERS,
     });
   } catch (err) {
-    return new Response(
-    );
+    return new Response(JSON.stringify({ error: err.message }), {
+      status: 500, headers: CORS_HEADERS,
+    });
+  }
+}
+
+// ─── GET /api/orders/check?orderId=XXX ─────────────────────────────────────
+async function handleCheckOrder(request, env, url) {
+  const orderId = url.searchParams.get('orderId');
+  if (!orderId) {
+    return new Response(JSON.stringify({ error: 'Missing orderId' }), {
+      status: 400, headers: CORS_HEADERS,
+    });
+  }
+
+  try {
+    const order = await env.DB.prepare(
+      `SELECT id, status, result_mom, result_dad, paid_at FROM orders WHERE id = ?`
+    ).bind(orderId).first();
+
+    if (!order) {
+      return new Response(JSON.stringify({ error: 'Order not found' }), {
+        status: 404, headers: CORS_HEADERS,
+      });
+    }
+
+    return new Response(JSON.stringify({
+      success: true,
+      order: {
+        id: order.id,
+        status: order.status,
+        resultMom: order.result_mom,
+        resultDad: order.result_dad,
+        paidAt: order.paid_at,
+      },
+    }), { status: 200, headers: CORS_HEADERS });
+  } catch (err) {
+    return new Response(JSON.stringify({ error: err.message }), {
+      status: 500, headers: CORS_HEADERS,
+    });
   }
 }
 
@@ -154,16 +174,14 @@ async function handleGetPhotos(request, env, url) {
   const pw = url.searchParams.get('password');
   if (pw !== ADMIN_PASSWORD) {
     return new Response(JSON.stringify({ error: 'Unauthorized' }), {
-      status: 401,
-      headers: CORS_HEADERS,
+      status: 401, headers: CORS_HEADERS,
     });
   }
 
   const orderId = url.searchParams.get('orderId');
   if (!orderId) {
     return new Response(JSON.stringify({ error: 'Missing orderId' }), {
-      status: 400,
-      headers: CORS_HEADERS,
+      status: 400, headers: CORS_HEADERS,
     });
   }
 
@@ -174,29 +192,24 @@ async function handleGetPhotos(request, env, url) {
 
     if (!order) {
       return new Response(JSON.stringify({ error: 'Order not found' }), {
-        status: 404,
-        headers: CORS_HEADERS,
+        status: 404, headers: CORS_HEADERS,
       });
     }
 
-    return new Response(
-      JSON.stringify({
-        success: true,
-        order: {
-          id: order.id,
-          momPhoto: order.mom_photo,
-          dadPhoto: order.dad_photo,
-          resultMom: order.result_mom,
-          resultDad: order.result_dad,
-        },
-      }),
-      { status: 200, headers: CORS_HEADERS }
-    );
+    return new Response(JSON.stringify({
+      success: true,
+      order: {
+        id: order.id,
+        momPhoto: order.mom_photo,
+        dadPhoto: order.dad_photo,
+        resultMom: order.result_mom,
+        resultDad: order.result_dad,
+      },
+    }), { status: 200, headers: CORS_HEADERS });
   } catch (err) {
-    return new Response(
-      JSON.stringify({ error: err.message }),
-      { status: 500, headers: CORS_HEADERS }
-    );
+    return new Response(JSON.stringify({ error: err.message }), {
+      status: 500, headers: CORS_HEADERS,
+    });
   }
 }
 
@@ -208,8 +221,7 @@ async function handleSaveResult(request, env) {
 
     if (!orderId) {
       return new Response(JSON.stringify({ error: 'Missing orderId' }), {
-        status: 400,
-        headers: CORS_HEADERS,
+        status: 400, headers: CORS_HEADERS,
       });
     }
 
@@ -232,55 +244,12 @@ async function handleSaveResult(request, env) {
       `UPDATE orders SET ${updateFields.join(', ')} WHERE id = ?`
     ).bind(...values).run();
 
-    console.log(`[orders] ✅ Order ${orderId} results saved`);
-
-    return new Response(
-      JSON.stringify({ success: true, message: 'Results saved' }),
-      { status: 200, headers: CORS_HEADERS }
-    );
-  } catch (err) {
-    console.error('[orders] Save result error:', err.message);
-    return new Response(
-      JSON.stringify({ error: err.message }),
-      { status: 500, headers: CORS_HEADERS }
-    );
-  }
-} {
-    return new Response(JSON.stringify({ error: 'Missing orderId' }), {
-      status: 400,
-      headers: CORS_HEADERS,
+    return new Response(JSON.stringify({ success: true, message: 'Results saved' }), {
+      status: 200, headers: CORS_HEADERS,
     });
-  }
-
-  try {
-    const order = await env.DB.prepare(
-      `SELECT id, status, result_mom, result_dad, paid_at FROM orders WHERE id = ?`
-    ).bind(orderId).first();
-
-    if (!order) {
-      return new Response(JSON.stringify({ error: 'Order not found' }), {
-        status: 404,
-        headers: CORS_HEADERS,
-      });
-    }
-
-    return new Response(
-      JSON.stringify({
-        success: true,
-        order: {
-          id: order.id,
-          status: order.status,
-          resultMom: order.result_mom,
-          resultDad: order.result_dad,
-          paidAt: order.paid_at,
-        },
-      }),
-      { status: 200, headers: CORS_HEADERS }
-    );
   } catch (err) {
-    return new Response(
-      JSON.stringify({ error: err.message }),
-      { status: 500, headers: CORS_HEADERS }
-    );
+    return new Response(JSON.stringify({ error: err.message }), {
+      status: 500, headers: CORS_HEADERS,
+    });
   }
 }
