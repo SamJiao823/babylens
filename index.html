@@ -49,6 +49,19 @@
         y=l.getElementsByTagName(r)[0];y.parentNode.insertBefore(t,y);
     })(window, document, "clarity", "script", "wps11oi5a1");
 </script>
+  <!-- BabyLens Analytics Counter -->
+  <script>
+    (function(){
+      var today = new Date().toISOString().split('T')[0];
+      var lsKey = 'bl_visit_' + today;
+      var isUnique = !localStorage.getItem(lsKey);
+      if (isUnique) localStorage.setItem(lsKey, '1');
+      var xhr = new XMLHttpRequest();
+      xhr.open('POST', '/api/analytics/pageview', true);
+      xhr.setRequestHeader('Content-Type', 'application/json');
+      xhr.send(JSON.stringify({ date: today, unique: isUnique }));
+    })();
+  </script>
   <style>
     /* ===== Reset & Base ===== */
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
