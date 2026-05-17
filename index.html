@@ -57,7 +57,7 @@
       var isUnique = !localStorage.getItem(lsKey);
       if (isUnique) localStorage.setItem(lsKey, '1');
       var xhr = new XMLHttpRequest();
-      xhr.open('POST', '/api/analytics/pageview', true);
+      xhr.open('POST', '/api/analytics', true);
       xhr.setRequestHeader('Content-Type', 'application/json');
       xhr.send(JSON.stringify({ date: today, unique: isUnique }));
     })();
