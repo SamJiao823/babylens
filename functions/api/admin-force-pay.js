@@ -67,10 +67,10 @@ export async function onRequest(context) {
 
     const now = new Date().toISOString();
     await env.DB.prepare(
-      `UPDATE orders SET status = 'paid', paid_at = ? WHERE id = ?`
+      `UPDATE orders SET status = 'paid', paid_at = ?, credits_remaining = 3 WHERE id = ?`
     ).bind(now, orderId).run();
 
-    console.log(`[admin-force-pay] ✅ Order ${orderId} marked as paid (admin)`);
+    console.log(`[admin-force-pay] ✅ Order ${orderId} marked as paid (admin, credits: 3)`);
 
     return new Response(
       JSON.stringify({ success: true, message: 'Payment forced (admin)', orderId, paidAt: now }),

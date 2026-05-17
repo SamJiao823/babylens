@@ -610,8 +610,8 @@
       display: flex; align-items: center; gap: 8px;
     }
 
-    /* ===== PayPal Button ===== */
-    .paypal-btn {
+    /* ===== Stripe / Card Button ===== */
+    .stripe-btn {
       display: block;
       width: 100%;
       padding: 14px;
@@ -626,7 +626,7 @@
       box-shadow: 0 4px 12px rgba(0,112,186,0.3);
       transition: transform 0.15s, box-shadow 0.15s;
     }
-    .paypal-btn:hover {
+    .stripe-btn:hover {
       transform: translateY(-2px);
       box-shadow: 0 6px 20px rgba(0,112,186,0.4);
     }
@@ -786,6 +786,41 @@
     /* ===== Animated elements ===== */
     @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
     @keyframes popIn { from { opacity: 0; transform: scale(0.7); } to { opacity: 1; transform: scale(1); } }
+
+    /* ===== Consent & Delete Modals ===== */
+    .modal-overlay {
+      position: fixed; inset: 0; z-index: 5000;
+      display: flex; align-items: center; justify-content: center;
+      background: rgba(0,0,0,0.5); backdrop-filter: blur(4px);
+      animation: fadeIn 0.2s ease;
+    }
+    .modal-box {
+      background: white; border-radius: 24px; padding: 32px;
+      max-width: 440px; width: 92%;
+      box-shadow: 0 20px 60px rgba(0,0,0,0.25);
+      animation: popIn 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    }
+    .modal-box h2 { font-family: 'Nunito', sans-serif; font-size: 1.35rem; margin-bottom: 6px; color: #333; }
+    .modal-box p { color: #888; font-size: 0.9rem; margin-bottom: 16px; line-height: 1.5; }
+    .consent-check { display: flex; align-items: flex-start; gap: 10px; margin: 16px 0; padding: 14px; background: #F8F6FF; border-radius: 12px; border: 2px solid #EDE9FE; }
+    .consent-check input[type="checkbox"] { width: 20px; height: 20px; margin-top: 2px; accent-color: #6C5CE7; cursor: pointer; flex-shrink: 0; }
+    .consent-check label { font-size: 0.88rem; color: #555; cursor: pointer; line-height: 1.5; }
+    .consent-check label strong { color: #333; }
+    .modal-btn {
+      width: 100%; padding: 14px;
+      background: linear-gradient(135deg, #6C5CE7, #a855f7);
+      color: white; border: none; border-radius: 50px;
+      font-size: 1.05rem; font-weight: 700; cursor: pointer;
+      font-family: 'Nunito', sans-serif;
+      transition: opacity 0.2s;
+    }
+    .modal-btn:hover { opacity: 0.9; }
+    .modal-btn:disabled { opacity: 0.4; cursor: not-allowed; }
+    .modal-cancel { width: 100%; padding: 10px; background: none; border: none; color: #999; font-size: 0.9rem; cursor: pointer; margin-top: 8px; font-family: 'Nunito', sans-serif; }
+    .modal-cancel:hover { color: #666; }
+    .delete-input { width: 100%; padding: 12px 16px; border: 2px solid #E2E8F0; border-radius: 12px; font-size: 0.95rem; margin-bottom: 12px; box-sizing: border-box; font-family: 'Nunito', sans-serif; }
+    .delete-input:focus { outline: none; border-color: #6C5CE7; }
+    .warning-badge { display: inline-block; background: #FEF2F2; color: #DC2626; padding: 4px 10px; border-radius: 8px; font-size: 0.78rem; font-weight: 600; margin-bottom: 12px; }
   </style>
 </head>
 <body>
@@ -845,21 +880,21 @@
   <!-- ===== Pricing ===== -->
   <section class="pricing" id="pricing">
     <div class="container">
-      <h2>One Price. All Features.</h2>
-      <p class="subtitle">One-time payment, no subscription. Photos generated in seconds.</p>
+      <h2>Simple &amp; Fair Pricing</h2>
+      <p class="subtitle">One payment. <strong>3 generations</strong>. No recurring fees.</p>
       <div class="pricing-grid">
         <div class="pricing-card featured">
           <div class="popular-badge">🌟 Best Value</div>
-          <h3>Basic</h3>
-          <div class="price">$9.99 <span>/ one-time</span></div>
+          <h3>3 Generations</h3>
+          <div class="price">$9.99 <span>/ 3 generations</span></div>
           <ul>
-            <li>✅ 8 HD baby photos (4 boy + 4 girl)</li>
-            <li>✅ Realistic AI generation (SDXL)</li>
-            <li>✅ Instant on-screen result</li>
-            <li>✅ High resolution download</li>
-            <li>✅ Money-back guarantee</li>
+            <li>✅ 3 AI generations (boy, girl, or both each time)</li>
+            <li>✅ Realistic AI baby face (SDXL powered)</li>
+            <li>✅ Instant on-screen result + HD download</li>
+            <li>✅ Use anytime — credits never expire</li>
+            <li>✅ 100% money-back guarantee</li>
           </ul>
-          <button onclick="serverPay('basic')" id="paypal-btn-basic" class="paypal-btn" style="width:100%;">🅿️ Pay with PayPal — $9.99</button>
+          <button onclick="serverPay('basic')" id="stripe-btn-basic" class="stripe-btn" style="width:100%;">💳 Pay with Card — $9.99</button>
           <button onclick="sandboxPay('basic')" id="sandbox-btn-basic" class="sandbox-btn" style="display:none;margin-top:8px;width:100%;padding:10px;border:2px dashed #6C5CE7;border-radius:12px;background:#F8F6FF;color:#6C5CE7;cursor:pointer;font-size:0.95rem;font-weight:600;">🧪 Sandbox Test — Pay $9.99 (test card)</button>
         </div>
       </div>
@@ -906,14 +941,14 @@
 
       <button class="btn-primary" id="generateBtn">
         💎 Generate Your Baby Photos
-        <span class="sub">$9.99 one-time · No subscription · Instant result</span>
+        <span class="sub">3 generations for $9.99 · Pay once · Use anytime</span>
       </button>
 
       <div class="trust">
         <div class="checks">
           <span>✅ Instant results on screen</span>
           <span>🔒 No storage, privacy first</span>
-          <span>💵 One-time payment, no subscription</span>
+          <span>💵 $9.99 = 3 generations, no subscription</span>
         </div>
       </div>
     </div>
@@ -1076,7 +1111,14 @@
             Is my privacy protected?
             <span class="arrow">▼</span>
           </div>
-          <div class="faq-a">Absolutely. Your photos are only used to generate your baby images and are deleted immediately after processing. We never store, share, or use your photos for any other purpose.</div>
+          <div class="faq-a">Absolutely. Your photos are biometric sensitive data. We require your explicit consent before processing (<strong>GDPR/CCPA compliant</strong>). Your photos are only used to generate your baby images, and you can <a href="#" onclick="showDeleteModal();return false;" style="color:#DC2626;font-weight:600;">request deletion</a> at any time. We never sell, share, or train AI on your photos.</div>
+        </div>
+        <div class="faq-item">
+          <div class="faq-q" onclick="toggleFaq(this)">
+            How do I delete my uploaded photos?
+            <span class="arrow">▼</span>
+          </div>
+          <div class="faq-a">We take your privacy seriously. You can request deletion of all your photos at any time. Just click <a href="#" onclick="showDeleteModal();return false;" style="color:#DC2626;font-weight:600;">🗑️ Delete My Data</a> in the footer, enter your order ID, and we'll permanently erase every photo from our servers within seconds. No questions asked.</div>
         </div>
         <div class="faq-item">
           <div class="faq-q" onclick="toggleFaq(this)">
@@ -1126,6 +1168,43 @@
       <div style="margin-top:16px;padding:12px;background:#FFF8F5;border-radius:12px;text-align:center;font-size:0.85rem;color:#666;">
         🤖 付款后自动生成宝宝照片，无需手动操作
       </div>
+    </div>
+  </div>
+
+  <!-- ===== Privacy Consent Modal ===== -->
+  <div id="consentModal" class="modal-overlay" style="display:none;">
+    <div class="modal-box" style="text-align:center;">
+      <div style="font-size:2.8rem;margin-bottom:8px;">🔒</div>
+      <h2>Your Privacy Matters</h2>
+      <p>Facial photos are biometric sensitive data. We need your consent before processing.</p>
+      <div class="consent-check">
+        <input type="checkbox" id="consentCheck">
+        <label for="consentCheck">
+          <strong>I consent</strong> to upload my facial photos for AI-powered baby face generation.
+          I understand the results are AI-predicted and for <strong>entertainment purposes only</strong>.
+        </label>
+      </div>
+      <p style="font-size:0.8rem;color:#aaa;margin-top:-8px;margin-bottom:16px;">
+        ⚠️ Generated images are not medical/scientific confirmation.
+      </p>
+      <button id="consentAcceptBtn" class="modal-btn" disabled>Accept &amp; Continue</button>
+      <button onclick="document.getElementById('consentModal').style.display='none'" class="modal-cancel">Maybe Later</button>
+    </div>
+  </div>
+
+  <!-- ===== Delete Data Modal ===== -->
+  <div id="deleteModal" class="modal-overlay" style="display:none;">
+    <div class="modal-box" style="text-align:center;">
+      <div style="font-size:2.8rem;margin-bottom:8px;">🗑️</div>
+      <h2>Delete Your Data</h2>
+      <p>Enter your order ID. All your photos will be permanently erased from our servers.</p>
+      <div style="text-align:left;">
+        <div class="warning-badge">⚠️ This action cannot be undone</div>
+        <input type="text" id="deleteOrderInput" class="delete-input" placeholder="Your order ID (e.g. BL-XXXXX-XXXXXX)" autocomplete="off">
+      </div>
+      <button id="deleteConfirmBtn" class="modal-btn" style="background:linear-gradient(135deg,#DC2626,#EF4444);">🗑️ Permanently Delete My Photos</button>
+      <button onclick="document.getElementById('deleteModal').style.display='none'" class="modal-cancel">Cancel</button>
+      <div id="deleteResult" style="margin-top:12px;font-size:0.9rem;display:none;"></div>
     </div>
   </div>
 
@@ -1570,7 +1649,7 @@
               <span style="font-weight:700;font-size:1.3rem;color:#FF6B8A;">$9.99</span>
             </div>
           </div>
-          <button id="confirmPayBtn" style="width:100%;padding:14px;background:linear-gradient(135deg,#0070BA,#1546A0);color:white;border:none;border-radius:50px;font-size:1.1rem;font-weight:700;cursor:pointer;font-family:'Nunito',sans-serif;">🅿️ Pay $9.99 with PayPal</button>
+          <button id="confirmPayBtn" style="width:100%;padding:14px;background:linear-gradient(135deg,#6C5CE7,#a29bfe);color:white;border:none;border-radius:50px;font-size:1.1rem;font-weight:700;cursor:pointer;font-family:'Nunito',sans-serif;">💳 Pay $9.99 with Card</button>
           <button onclick="document.getElementById('confirmPayOverlay').remove()" style="width:100%;padding:10px;background:none;border:none;color:#999;font-size:0.9rem;cursor:pointer;margin-top:8px;font-family:'Nunito',sans-serif;">Cancel</button>
         </div>
       `;
@@ -1581,7 +1660,7 @@
       });
     }
 
-    // ===== 服务器端创建订单 + PayPal 支付 =====
+    // ===== 服务器端创建订单 + Stripe Checkout 支付 =====
     async function serverPay(plan) {
       if (!momPhotoData || !dadPhotoData) {
         showToast('📸 Please upload BOTH Mom and Dad photos first!', '📸', 6000);
@@ -1595,14 +1674,14 @@
 
       const gender = getActiveGender();
       const payBtn = document.getElementById('generateBtn');
-      const paypalBtn = document.getElementById('paypal-btn-basic');
+      const stripeBtn = document.getElementById('stripe-btn-basic');
       payBtn.disabled = true;
       payBtn.textContent = '⏳ Creating order...';
-      if (paypalBtn) { paypalBtn.disabled = true; paypalBtn.textContent = '⏳ Processing...'; }
+      if (stripeBtn) { stripeBtn.disabled = true; stripeBtn.textContent = '⏳ Processing...'; }
 
       try {
-        // 1. 在服务器创建订单（照片存入 D1）
-        const res = await fetch('/api/orders', {
+        // 1. 创建 Stripe Checkout Session（后端同时保存订单到 D1）
+        const res = await fetch('/api/stripe-checkout', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({
@@ -1614,48 +1693,21 @@
         });
 
         const data = await res.json();
-        if (!data.success) {
-          throw new Error(data.message || 'Failed to create order');
+        if (!data.success || !data.url) {
+          throw new Error(data.message || 'Failed to create checkout');
         }
 
         currentOrder = { id: data.orderId, plan, gender, momPhoto: momPhotoData, dadPhoto: dadPhotoData };
 
-        // 2. 打开 PayPal 支付页
-        window.open(data.paypalUrl, '_blank');
-
-        showToast('📋 Order created! Complete payment in the PayPal window.', '🅿️');
-        payBtn.textContent = '⏳ Waiting for payment...';
-
-        // 3. 轮询等待付款确认（最多等5分钟）
-        const maxWait = Date.now() + 5 * 60 * 1000;
-        const pollInterval = setInterval(async () => {
-          try {
-            const check = await fetch(`/api/orders/check?orderId=${data.orderId}`);
-            const checkData = await check.json();
-            if (checkData.success && checkData.order && checkData.order.status === 'paid') {
-              clearInterval(pollInterval);
-              payBtn.disabled = false;
-              payBtn.textContent = '🤖 Generating...';
-              document.getElementById('orderSuccess').style.display = 'block';
-              document.getElementById('generator').style.display = 'none';
-              startGeneration(data.orderId);
-            }
-          } catch (e) { /* ignore polling errors */ }
-          if (Date.now() > maxWait) {
-            clearInterval(pollInterval);
-            payBtn.disabled = false;
-            payBtn.textContent = '🤱 Generate Baby Now — $9.99';
-            if (paypalBtn) { paypalBtn.disabled = false; paypalBtn.textContent = '🅿️ Pay with PayPal — $9.99'; }
-            showToast('⏰ Payment timeout. Please try again.', '⏰');
-          }
-        }, 3000);
+        // 2. 跳转到 Stripe Checkout 安全支付页
+        window.location.href = data.url;
 
       } catch (err) {
         console.error('[serverPay] Error:', err);
         showToast('❌ ' + err.message, '⚠️');
         payBtn.disabled = false;
         payBtn.textContent = '🤱 Generate Baby Now — $9.99';
-        if (paypalBtn) { paypalBtn.disabled = false; paypalBtn.textContent = '🅿️ Pay with PayPal — $9.99'; }
+        if (stripeBtn) { stripeBtn.disabled = false; stripeBtn.textContent = '💳 Pay with Card — $9.99'; }
       }
     }
 
@@ -1704,7 +1756,8 @@
             <div style="font-size:0.85rem;color:#555;line-height:1.8;">
               📦 ${planName} · ${o.gender === 'both' ? '👶 男女' : o.gender === 'boy' ? '👦 男' : '👧 女'}<br>
               🕐 ${time}<br>
-              ${o.paid_at ? '✅ 付款: ' + paidTime : ''}
+              ${o.paid_at ? '✅ 付款: ' + paidTime : ''}<br>
+              ${o.credits_remaining != null ? '🎟️ Credits: ' + o.credits_remaining : ''}
             </div>
             <div style="display:flex;gap:6px;margin-top:8px;">
               <button onclick="viewOrderPhotos('${o.id}')" style="flex:1;padding:7px;border:1px solid #ddd;border-radius:8px;background:white;cursor:pointer;font-size:0.8rem;">📸 照片</button>
@@ -1789,17 +1842,17 @@
       sandboxMode = !sandboxMode;
       const btn = document.getElementById('sandboxToggle');
       const sbBasic = document.getElementById('sandbox-btn-basic');
-      var pbBasic = document.getElementById('paypal-btn-basic');
+      var stripeBtn = document.getElementById('stripe-btn-basic');
       if (sandboxMode) {
         btn.style.background = '#6C5CE7';
         btn.textContent = '🔬 Sandbox: ON';
         sbBasic.style.display = 'block';
-        pbBasic.style.display = 'none';
+        stripeBtn.style.display = 'none';
       } else {
         btn.style.background = '#636E72';
         btn.textContent = '🔬 Sandbox: OFF';
         sbBasic.style.display = 'none';
-        pbBasic.style.display = '';
+        stripeBtn.style.display = '';
       }
     }
 
@@ -1901,6 +1954,64 @@
         showToast('❌ ' + err.message, '⚠️');
       }
     }
+
+    // ===== Consent Popup (GDPR/CCPA) =====
+    (function initConsent() {
+      const consented = localStorage.getItem('babylens_consent');
+      if (!consented) {
+        document.getElementById('consentModal').style.display = 'flex';
+      }
+      const check = document.getElementById('consentCheck');
+      const btn = document.getElementById('consentAcceptBtn');
+      check.addEventListener('change', function() {
+        btn.disabled = !this.checked;
+      });
+      btn.addEventListener('click', function() {
+        localStorage.setItem('babylens_consent', 'true');
+        document.getElementById('consentModal').style.display = 'none';
+      });
+    })();
+
+    // ===== Delete Data Modal =====
+    function showDeleteModal() {
+      document.getElementById('deleteModal').style.display = 'flex';
+      document.getElementById('deleteOrderInput').value = '';
+      document.getElementById('deleteResult').style.display = 'none';
+      document.getElementById('deleteConfirmBtn').disabled = false;
+      document.getElementById('deleteConfirmBtn').textContent = '🗑️ Permanently Delete My Photos';
+    }
+    document.getElementById('deleteConfirmBtn').addEventListener('click', async function() {
+      const orderId = document.getElementById('deleteOrderInput').value.trim();
+      if (!orderId) {
+        showToast('Please enter your order ID', '⚠️');
+        return;
+      }
+      if (!orderId.startsWith('BL-')) {
+        showToast('Invalid order ID format (should start with BL-)', '⚠️');
+        return;
+      }
+      this.disabled = true;
+      this.textContent = '⏳ Deleting...';
+      try {
+        const res = await fetch('/api/orders/delete-data', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ orderId }),
+        });
+        const data = await res.json();
+        if (data.success) {
+          document.getElementById('deleteResult').style.display = 'block';
+          document.getElementById('deleteResult').innerHTML = '<span style="color:#16A34A;font-weight:600;">✅ ' + data.message + '</span>';
+          document.getElementById('deleteConfirmBtn').textContent = '✅ Done';
+        } else {
+          throw new Error(data.error || 'Failed to delete');
+        }
+      } catch (err) {
+        showToast('❌ ' + err.message, '⚠️');
+        this.disabled = false;
+        this.textContent = '🗑️ Permanently Delete My Photos';
+      }
+    });
 
     // ===== 管理员入口 =====
     let adminUnlocked = false;

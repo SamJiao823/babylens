@@ -53,6 +53,10 @@ export async function onRequest(context) {
     return handleSaveResult(request, env);
   }
 
+  if (method === 'POST' && path.endsWith('/delete-data')) {
+    return handleDeleteData(request, env);
+  }
+
   return new Response(JSON.stringify({ error: 'Not found' }), {
     status: 404,
     headers: CORS_HEADERS,
@@ -247,6 +251,44 @@ async function handleSaveResult(request, env) {
     return new Response(JSON.stringify({ success: true, message: 'Results saved' }), {
       status: 200, headers: CORS_HEADERS,
     });
+  } catch (err) {
+    return new Response(JSON.stringify({ error: err.message }), {
+      status: 500, headers: CORS_HEADERS,
+    });
+  }
+}
+// ─── POST /api/orders/delete-data — 一键删除用户照片数据 ─────────────────
+async function handleDeleteData(request, env) {
+  try {
+    const body = await request.json();
+    const { orderId } = body;
+
+    if (!orderId) {
+      return new Response(JSON.stringify({ error: 'Missing orderId' }), {
+        status: 400, headers: CORS_HEADERS,
+      });
+    }
+
+    const order = await env.DB.prepare(
+      `SELECT id FROM orders WHERE id = ?`
+    ).bind(orderId).first();
+
+    if (!order) {
+      return new Response(JSON.stringify({ error: 'Order not found' }), {
+        status: 404, headers: CORS_HEADERS,
+      });
+    }
+
+    const now = new Date().toISOString();
+    await env.DB.prepare(
+      `UPDATE orders SET mom_photo = NULL, dad_photo = NULL, result_mom = NULL, result_dad = NULL, data_deleted_at = ? WHERE id = ?`
+    ).bind(now, orderId).run();
+
+    return new Response(JSON.stringify({
+      success: true,
+      message: 'All your photos have been permanently deleted from our servers.',
+      deletedAt: now,
+    }), { status: 200, headers: CORS_HEADERS });
   } catch (err) {
     return new Response(JSON.stringify({ error: err.message }), {
       status: 500, headers: CORS_HEADERS,

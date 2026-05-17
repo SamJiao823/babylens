@@ -102,10 +102,10 @@ export async function onRequest(context) {
     // ─── 4. 标记订单为已付款！ ─────────────────────────────────────
     const now = new Date().toISOString();
     await env.DB.prepare(
-      `UPDATE orders SET status = 'paid', paid_at = ?, paypal_transaction_id = ? WHERE id = ? AND status = 'pending'`
+      `UPDATE orders SET status = 'paid', paid_at = ?, paypal_transaction_id = ?, credits_remaining = 3 WHERE id = ? AND status = 'pending'`
     ).bind(now, txnId, orderId).run();
 
-    console.log(`[paypal-ipn] ✅ Order ${orderId} marked as paid (txn: ${txnId})`);
+    console.log(`[paypal-ipn] ✅ Order ${orderId} marked as paid (txn: ${txnId}, credits: 3)`);
 
     return new Response('OK', { status: 200 });
   } catch (err) {
