@@ -21,9 +21,9 @@
   <!-- Open Graph / Social Sharing -->
   <meta property="og:title" content="BabyLens AI - See Your Future Baby Instantly">
   <meta property="og:description" content="Upload your photos and AI generates ultra-realistic baby face predictions. See what your future child will look like!">
-  <meta property="og:url" content="https://babylens.ai">
+  <meta property="og:url" content="https://babylens.pages.dev">
   <meta name="robots" content="index, follow" />
-  <link rel="canonical" href="https://babylens.ai" />
+  <link rel="canonical" href="https://babylens.pages.dev" />
   <meta property="og:type" content="website">
   <meta property="og:image" content="/og-image.png">
   <meta property="og:image:width" content="1200">
@@ -190,7 +190,7 @@
       border-color: #E74C3C !important;
       box-shadow: 0 0 0 4px rgba(231,76,60,0.2) !important;
     }
-    .upload-box
+    .upload-box {
       background: var(--white);
       border: 2px dashed #E8D0D0;
       border-radius: var(--radius);
@@ -832,9 +832,26 @@
     .delete-input { width: 100%; padding: 12px 16px; border: 2px solid #E2E8F0; border-radius: 12px; font-size: 0.95rem; margin-bottom: 12px; box-sizing: border-box; font-family: 'Nunito', sans-serif; }
     .delete-input:focus { outline: none; border-color: #6C5CE7; }
     .warning-badge { display: inline-block; background: #FEF2F2; color: #DC2626; padding: 4px 10px; border-radius: 8px; font-size: 0.78rem; font-weight: 600; margin-bottom: 12px; }
+    /* ===== Cookie Consent Banner ===== */
+    .cookie-banner { position: fixed; bottom: 0; left: 0; right: 0; background: #1a1a1a; color: #f5f5f0; z-index: 9999; padding: 16px 24px; display: flex; align-items: center; justify-content: center; gap: 16px; flex-wrap: wrap; box-shadow: 0 -4px 20px rgba(0,0,0,0.3); transform: translateY(100%); transition: transform 0.3s ease; }
+    .cookie-banner.show { transform: translateY(0); }
+    .cookie-banner p { font-size: 0.85rem; color: #a8a8a0; margin: 0; max-width: 600px; }
+    .cookie-banner p a { color: #d4a83c; text-decoration: underline; }
+    .cookie-banner .cookie-btns { display: flex; gap: 8px; }
+    .cookie-banner .cookie-accept { padding: 8px 20px; background: #d4a83c; color: #0f0f0f; border: none; border-radius: 8px; font-weight: 600; cursor: pointer; font-size: 0.85rem; }
+    .cookie-banner .cookie-decline { padding: 8px 20px; background: transparent; color: #a8a8a0; border: 1px solid #555; border-radius: 8px; cursor: pointer; font-size: 0.85rem; }
   </style>
 </head>
 <body>
+
+  <!-- ===== Cookie Consent Banner ===== -->
+  <div id="cookieBanner" class="cookie-banner">
+    <p>We use cookies for analytics (Google Analytics &amp; Microsoft Clarity) to improve our service. By clicking "Accept", you consent to our use of cookies. <a href="privacy.html">Privacy Policy</a></p>
+    <div class="cookie-btns">
+      <button class="cookie-accept" onclick="acceptCookies()">Accept</button>
+      <button class="cookie-decline" onclick="declineCookies()">Decline</button>
+    </div>
+  </div>
 
   <!-- ===== Header ===== -->
   <header>
@@ -1142,12 +1159,12 @@
     </div>
   </section>
 
-  <!-- ===== Admin Panel ===== -->
-  <div id="adminToggle" style="position:fixed;bottom:16px;right:16px;z-index:999;width:40px;height:40px;background:var(--pink);color:white;border:none;border-radius:50%;cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:1.2rem;box-shadow:0 2px 12px rgba(0,0,0,0.2);opacity:0.6;" title="管理员入口">⚙️</div>
+  <!-- ===== Admin Panel (hidden, Ctrl+Shift+A to toggle) ===== -->
+  <div id="adminToggle" style="position:fixed;bottom:16px;right:16px;z-index:999;width:40px;height:40px;background:var(--pink);color:white;border:none;border-radius:50%;cursor:pointer;display:none;align-items:center;justify-content:center;font-size:1.2rem;box-shadow:0 2px 12px rgba(0,0,0,0.2);opacity:0.6;" title="Admin" aria-label="Admin panel">⚙️</div>
 
   <div id="adminPanel" style="display:none;position:fixed;bottom:64px;right:16px;width:380px;max-height:70vh;background:white;border-radius:16px;box-shadow:0 8px 40px rgba(0,0,0,0.2);z-index:1000;overflow:hidden;flex-direction:column;">
     <div style="background:linear-gradient(135deg,var(--pink),var(--coral));color:white;padding:14px 18px;display:flex;justify-content:space-between;align-items:center;">
-      <span style="font-weight:700;font-family:'Nunito',sans-serif;">⚙️ 订单管理</span>
+      <span style="font-weight:700;font-family:'Nunito',sans-serif;">⚙️ Order Management</span>
       <span id="orderCount" style="background:rgba(255,255,255,0.3);padding:2px 10px;border-radius:12px;font-size:0.8rem;">0</span>
     </div>
     <div style="padding:10px 12px;display:flex;gap:8px;flex-wrap:wrap;border-bottom:1px solid #f0f0f0;">
@@ -1155,7 +1172,7 @@
       <button onclick="testPayment('basic')" style="flex:1;padding:8px;border:none;border-radius:8px;background:linear-gradient(135deg,#6C5CE7,#a29bfe);color:white;cursor:pointer;font-weight:600;font-size:0.75rem;">🧪 Quick Test ($9.99)</button>
     </div>
     <div id="adminOrderList" style="overflow-y:auto;flex:1;padding:12px;">
-      <div style="text-align:center;padding:30px 0;color:#B2BEC3;">暂无订单</div>
+      <div style="text-align:center;padding:30px 0;color:#B2BEC3;">No orders yet</div>
     </div>
   </div>
 
@@ -1177,7 +1194,7 @@
         </div>
       </div>
       <div style="margin-top:16px;padding:12px;background:#FFF8F5;border-radius:12px;text-align:center;font-size:0.85rem;color:#666;">
-        🤖 付款后自动生成宝宝照片，无需手动操作
+        🤖 Baby photos will be auto-generated after payment
       </div>
     </div>
   </div>
@@ -1749,15 +1766,15 @@
         const pending = orders.filter(o => o.status === 'pending' || o.status === 'paid');
         count.textContent = pending.length;
         if (orders.length === 0) {
-          list.innerHTML = '<div style="text-align:center;padding:30px 0;color:#B2BEC3;">暂无订单</div>';
+          list.innerHTML = '<div style="text-align:center;padding:30px 0;color:#B2BEC3;">No orders yet</div>';
           return;
         }
         let html = '';
         orders.forEach((o, i) => {
           const planName = o.plan === 'free' ? 'Free Trial' : 'Basic ($9.99)';
-          const time = new Date(o.created_at).toLocaleString('zh-CN', {hour12:false});
-          const paidTime = o.paid_at ? new Date(o.paid_at).toLocaleString('zh-CN', {hour12:false}) : '';
-          const statusMap = {pending:'⏳ 待付款', paid:'✅ 已付款-待生成', generating:'🤖 生成中', delivered:'📬 已发货'};
+          const time = new Date(o.created_at).toLocaleString('en-US', {hour12:true});
+          const paidTime = o.paid_at ? new Date(o.paid_at).toLocaleString('en-US', {hour12:true}) : '';
+          const statusMap = {pending:'⏳ Pending', paid:'✅ Paid', generating:'🤖 Generating', delivered:'📬 Delivered'};
           const statusColor = {pending:'#F39C12', paid:'#2ECC71', generating:'#3498DB', delivered:'#3498DB'};
           html += `<div style="border:1px solid #eee;border-radius:12px;padding:12px;margin-bottom:10px;">
             <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px;">
@@ -1765,13 +1782,13 @@
               <span style="font-size:0.7rem;color:#999;">#${o.id}</span>
             </div>
             <div style="font-size:0.85rem;color:#555;line-height:1.8;">
-              📦 ${planName} · ${o.gender === 'both' ? '👶 男女' : o.gender === 'boy' ? '👦 男' : '👧 女'}<br>
+              📦 ${planName} · ${o.gender === 'both' ? '👶 Boy & Girl' : o.gender === 'boy' ? '👦 Boy' : '👧 Girl'}<br>
               🕐 ${time}<br>
-              ${o.paid_at ? '✅ 付款: ' + paidTime : ''}<br>
+              ${o.paid_at ? '✅ Paid: ' + paidTime : ''}<br>
               ${o.credits_remaining != null ? '🎟️ Credits: ' + o.credits_remaining : ''}
             </div>
             <div style="display:flex;gap:6px;margin-top:8px;">
-              <button onclick="viewOrderPhotos('${o.id}')" style="flex:1;padding:7px;border:1px solid #ddd;border-radius:8px;background:white;cursor:pointer;font-size:0.8rem;">📸 照片</button>
+              <button onclick="viewOrderPhotos('${o.id}')" style="flex:1;padding:7px;border:1px solid #ddd;border-radius:8px;background:white;cursor:pointer;font-size:0.8rem;">📸 Photos</button>
               <button onclick="adminRegenerate('${o.id}')" style="flex:1;padding:7px;border:1px solid #3498DB;border-radius:8px;background:#E8F0FE;cursor:pointer;font-size:0.8rem;color:#2980B9;font-weight:600;">🔄 Regenerate</button>
             </div>
           </div>`;
@@ -1780,7 +1797,7 @@
         window._adminOrders = orders;
       } catch (err) {
         console.error('Admin load error:', err);
-        document.getElementById('adminOrderList').innerHTML = '<div style="text-align:center;padding:30px 0;color:#E74C3C;">❌ 加载失败: ' + err.message + '</div>';
+        document.getElementById('adminOrderList').innerHTML = '<div style="text-align:center;padding:30px 0;color:#E74C3C;">❌ Load failed: ' + err.message + '</div>';
       }
     }
 
@@ -1789,13 +1806,13 @@
         const res = await fetch(`/api/orders/photos?orderId=${orderId}&password=babylens2024`);
         const data = await res.json();
         if (data.success && data.order) {
-          document.getElementById('photoOverlayOrder').textContent = '📋 订单 #' + data.order.id;
+          document.getElementById('photoOverlayOrder').textContent = '📋 Order #' + data.order.id;
           document.getElementById('photoMom').src = data.order.momPhoto || '';
           document.getElementById('photoDad').src = data.order.dadPhoto || '';
           document.getElementById('photoOverlay').style.display = 'flex';
         }
       } catch (err) {
-        showToast('❌ 加载照片失败: ' + err.message, '⚠️');
+        showToast('❌ Failed to load photos: ' + err.message, '⚠️');
       }
     }
 
@@ -1804,8 +1821,8 @@
     }
 
     async function adminRegenerate(orderId) {
-      if (!confirm('手动重新生成此订单？')) return;
-      showToast('🔄 正在重新生成...', '🤖');
+      if (!confirm('Manually regenerate this order?')) return;
+      showToast('🔄 Regenerating...', '🤖');
       try {
         // 从服务器获取订单照片
         const photoRes = await fetch(`/api/orders/photos?orderId=${orderId}&password=babylens2024`);
@@ -1837,13 +1854,13 @@
               resultDad: genData.images.babyFromDad || '',
             }),
           });
-          showToast('✅ 重新生成成功！', '🎉');
+          showToast('✅ Regenerated successfully!', '🎉');
           renderAdmin();
         } else {
           throw new Error(genData.message || 'Generation failed');
         }
       } catch (err) {
-        showToast('❌ 重新生成失败: ' + err.message, '⚠️');
+        showToast('❌ Regeneration failed: ' + err.message, '⚠️');
       }
     }
 
@@ -1966,6 +1983,30 @@
       }
     }
 
+    // ===== Cookie Consent (GDPR/CCPA) =====
+    (function initCookieConsent() {
+      const consented = localStorage.getItem('babylens_cookie_consent');
+      if (consented === null) {
+        setTimeout(function() {
+          document.getElementById('cookieBanner').classList.add('show');
+        }, 500);
+      }
+      if (consented === 'false') {
+        window['ga-disable-G-NK9GH5PF2Y'] = true;
+      }
+    })();
+
+    function acceptCookies() {
+      localStorage.setItem('babylens_cookie_consent', 'true');
+      document.getElementById('cookieBanner').classList.remove('show');
+    }
+
+    function declineCookies() {
+      localStorage.setItem('babylens_cookie_consent', 'false');
+      window['ga-disable-G-NK9GH5PF2Y'] = true;
+      document.getElementById('cookieBanner').classList.remove('show');
+    }
+
     // ===== Consent Popup (GDPR/CCPA) =====
     (function initConsent() {
       const consented = localStorage.getItem('babylens_consent');
@@ -2024,8 +2065,18 @@
       }
     });
 
-    // ===== 管理员入口 =====
+    // ===== Admin Entry (Ctrl+Shift+A to reveal) =====
     let adminUnlocked = false;
+    document.addEventListener('keydown', function(e) {
+      if ((e.ctrlKey || e.metaKey) && e.shiftKey && e.key === 'A') {
+        e.preventDefault();
+        const toggle = document.getElementById('adminToggle');
+        if (toggle.style.display === 'none' || !toggle.style.display) {
+          toggle.style.display = 'flex';
+          showToast('⚙️ Admin button unlocked — click the gear icon', '🔑', 3000);
+        }
+      }
+    });
     document.getElementById('adminToggle').addEventListener('click', function() {
       if (adminUnlocked) {
         const panel = document.getElementById('adminPanel');
@@ -2039,7 +2090,7 @@
         document.getElementById('adminPanel').style.display = 'flex';
         renderAdmin();
       } else if (pw !== null) {
-        alert('密码错误！');
+        alert('Incorrect password!');
       }
     });
 
